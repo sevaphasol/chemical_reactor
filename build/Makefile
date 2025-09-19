@@ -174,29 +174,29 @@ chemical-reaction/fast:
 	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/build
 .PHONY : chemical-reaction/fast
 
-source/application/scene_manager.o: source/application/scene_manager.cpp.o
-.PHONY : source/application/scene_manager.o
+source/application/vector.o: source/application/vector.cpp.o
+.PHONY : source/application/vector.o
 
 # target to build an object file
-source/application/scene_manager.cpp.o:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.o
-.PHONY : source/application/scene_manager.cpp.o
+source/application/vector.cpp.o:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.o
+.PHONY : source/application/vector.cpp.o
 
-source/application/scene_manager.i: source/application/scene_manager.cpp.i
-.PHONY : source/application/scene_manager.i
+source/application/vector.i: source/application/vector.cpp.i
+.PHONY : source/application/vector.i
 
 # target to preprocess a source file
-source/application/scene_manager.cpp.i:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.i
-.PHONY : source/application/scene_manager.cpp.i
+source/application/vector.cpp.i:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.i
+.PHONY : source/application/vector.cpp.i
 
-source/application/scene_manager.s: source/application/scene_manager.cpp.s
-.PHONY : source/application/scene_manager.s
+source/application/vector.s: source/application/vector.cpp.s
+.PHONY : source/application/vector.s
 
 # target to generate assembly for a file
-source/application/scene_manager.cpp.s:
-	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.s
-.PHONY : source/application/scene_manager.cpp.s
+source/application/vector.cpp.s:
+	$(MAKE) $(MAKESILENT) -f CMakeFiles/chemical-reaction.dir/build.make CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.s
+.PHONY : source/application/vector.cpp.s
 
 source/main.o: source/main.cpp.o
 .PHONY : source/main.o
@@ -235,9 +235,9 @@ help:
 	@echo "... list_install_components"
 	@echo "... rebuild_cache"
 	@echo "... chemical-reaction"
-	@echo "... source/application/scene_manager.o"
-	@echo "... source/application/scene_manager.i"
-	@echo "... source/application/scene_manager.s"
+	@echo "... source/application/vector.o"
+	@echo "... source/application/vector.i"
+	@echo "... source/application/vector.s"
 	@echo "... source/main.o"
 	@echo "... source/main.i"
 	@echo "... source/main.s"

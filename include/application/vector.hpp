@@ -7,32 +7,32 @@ namespace application {
 
 class Vector {
   public:
-    Vector( float x, float y, float z );
+    Vector( double x, double y, double z );
 
     Vector( const sf::Color& color );
 
     bool
     Valid() const;
 
-    float
+    double
     GetLenSq() const;
 
-    float
+    double
     GetLen() const;
 
-    float
+    double
     GetX() const;
 
-    float
+    double
     GetY() const;
 
-    float
+    double
     GetZ() const;
 
     void
-    Clamp( float lo, float hi );
+    Clamp( double lo, double hi );
 
-    float
+    double
     operator,( const Vector& that ) const;
 
     Vector
@@ -48,39 +48,39 @@ class Vector {
     operator-=( const Vector& that );
 
     Vector
-    operator+( float scalar ) const;
+    operator+( double scalar ) const;
 
     Vector
-    operator-( float scalar ) const;
+    operator-( double scalar ) const;
 
     Vector
-    operator*( float scalar ) const;
+    operator*( double scalar ) const;
 
     void
-    operator+=( float scalar );
+    operator+=( double scalar );
 
     void
-    operator-=( float scalar );
+    operator-=( double scalar );
 
     void
-    operator*=( float scalar );
+    operator*=( double scalar );
 
   private:
-    float x_;
-    float y_;
-    float z_;
+    double x_;
+    double y_;
+    double z_;
 };
 
 Vector
-operator*( float scalar, const Vector& v );
+operator*( double scalar, const Vector& v );
 
-float
+double
 CalcCos( const Vector& v1, const Vector& v2 );
 
-float
+double
 CalcSin( const Vector& v1, const Vector& v2 );
 
-float
+double
 CalcVecMulModule( const Vector& v1, const Vector& v2 );
 
 } // namespace application

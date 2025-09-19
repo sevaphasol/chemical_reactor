@@ -1,6 +1,6 @@
 file(REMOVE_RECURSE
-  "CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.o"
-  "CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.o.d"
+  "CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.o"
+  "CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.o.d"
   "CMakeFiles/chemical-reaction.dir/source/main.cpp.o"
   "CMakeFiles/chemical-reaction.dir/source/main.cpp.o.d"
   "chemical-reaction"

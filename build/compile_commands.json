@@ -1,9 +1,9 @@
 [
 {
   "directory": "/home/sevsol/Projects/chemical_reaction/build",
-  "command": "/usr/bin/c++  -I/home/sevsol/Projects/chemical_reaction/include -I/home/sevsol/Projects/chemical_reaction/src -std=gnu++17 -fopenmp -o CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.o -c /home/sevsol/Projects/chemical_reaction/source/application/scene_manager.cpp",
-  "file": "/home/sevsol/Projects/chemical_reaction/source/application/scene_manager.cpp",
-  "output": "CMakeFiles/chemical-reaction.dir/source/application/scene_manager.cpp.o"
+  "command": "/usr/bin/c++  -I/home/sevsol/Projects/chemical_reaction/include -I/home/sevsol/Projects/chemical_reaction/src -std=gnu++17 -fopenmp -o CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.o -c /home/sevsol/Projects/chemical_reaction/source/application/vector.cpp",
+  "file": "/home/sevsol/Projects/chemical_reaction/source/application/vector.cpp",
+  "output": "CMakeFiles/chemical-reaction.dir/source/application/vector.cpp.o"
 },
 {
   "directory": "/home/sevsol/Projects/chemical_reaction/build",

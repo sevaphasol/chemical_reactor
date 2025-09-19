@@ -10,8 +10,8 @@ namespace application {
 
 class CircleMolecule : public Molecule {
   public:
-    CircleMolecule( float r, float x, float y, float vx, float vy )
-        : Molecule( r, x, y, vx, vy, 1.0f ), shape_( r )
+    CircleMolecule( double r, double x, double y, double vx, double vy, double weight )
+        : Molecule( r, x, y, vx, vy, weight ), shape_( r )
     {
         shape_.setPosition( x, y );
     }
@@ -24,13 +24,13 @@ class CircleMolecule : public Molecule {
     }
 
     void
-    SetShapeX( float x ) override
+    SetShapeX( double x ) override
     {
         shape_.setPosition( x, y_ );
     }
 
     void
-    SetShapeY( float y ) override
+    SetShapeY( double y ) override
     {
         shape_.setPosition( x_, y );
     }
@@ -53,7 +53,7 @@ class CircleMolecule : public Molecule {
 
 class SquareMolecule : public Molecule {
   public:
-    SquareMolecule( float r, float x, float y, float vx, float vy, float weight )
+    SquareMolecule( double r, double x, double y, double vx, double vy, double weight )
         : Molecule( r, x, y, vx, vy, weight ), shape_( sf::Vector2f( r * 2, r * 2 ) )
     {
         shape_.setPosition( x, y );
@@ -67,13 +67,13 @@ class SquareMolecule : public Molecule {
     }
 
     void
-    SetShapeX( float x ) override
+    SetShapeX( double x ) override
     {
         shape_.setPosition( x, y_ );
     }
 
     void
-    SetShapeY( float y ) override
+    SetShapeY( double y ) override
     {
         shape_.setPosition( x_, y );
     }

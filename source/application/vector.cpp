@@ -4,7 +4,7 @@
 
 namespace application {
 
-Vector::Vector( float x, float y, float z ) : x_( x ), y_( y ), z_( z ) {};
+Vector::Vector( double x, double y, double z ) : x_( x ), y_( y ), z_( z ) {};
 
 Vector::Vector( const sf::Color& color ) : x_( color.r ), y_( color.g ), z_( color.b ) {};
 
@@ -14,45 +14,45 @@ Vector::Valid() const
     return !( std::isnan( x_ ) || std::isnan( y_ ) || std::isnan( z_ ) );
 }
 
-float
+double
 Vector::GetX() const
 {
     return x_;
 }
 
-float
+double
 Vector::GetY() const
 {
     return y_;
 }
 
-float
+double
 Vector::GetZ() const
 {
     return z_;
 }
 
 void
-Vector::Clamp( float lo, float hi )
+Vector::Clamp( double lo, double hi )
 {
     x_ = std::clamp( x_, lo, hi );
     y_ = std::clamp( y_, lo, hi );
     z_ = std::clamp( z_, lo, hi );
 }
 
-float
+double
 Vector::GetLenSq() const
 {
     return ( *this, *this );
 }
 
-float
+double
 Vector::GetLen() const
 {
     return std::sqrt( GetLenSq() );
 }
 
-float
+double
 Vector::operator,( const Vector& that ) const
 {
     return ( this->x_ * that.x_ ) + ( this->y_ * that.y_ ) + ( this->z_ * that.z_ );
@@ -87,25 +87,25 @@ Vector::operator-=( const Vector& that )
 }
 
 Vector
-Vector::operator+( float scalar ) const
+Vector::operator+( double scalar ) const
 {
     return Vector( this->x_ + scalar, this->y_ + scalar, this->z_ + scalar );
 }
 
 Vector
-Vector::operator-( float scalar ) const
+Vector::operator-( double scalar ) const
 {
     return Vector( this->x_ - scalar, this->y_ - scalar, this->z_ - scalar );
 }
 
 Vector
-Vector::operator*( float scalar ) const
+Vector::operator*( double scalar ) const
 {
     return Vector( this->x_ * scalar, this->y_ * scalar, this->z_ * scalar );
 }
 
 void
-Vector::operator+=( float scalar )
+Vector::operator+=( double scalar )
 {
     this->x_ += scalar;
     this->y_ += scalar;
@@ -113,7 +113,7 @@ Vector::operator+=( float scalar )
 }
 
 void
-Vector::operator-=( float scalar )
+Vector::operator-=( double scalar )
 {
     this->x_ -= scalar;
     this->y_ -= scalar;
@@ -121,7 +121,7 @@ Vector::operator-=( float scalar )
 }
 
 void
-Vector::operator*=( float scalar )
+Vector::operator*=( double scalar )
 {
     this->x_ *= scalar;
     this->y_ *= scalar;
@@ -129,24 +129,24 @@ Vector::operator*=( float scalar )
 }
 
 Vector
-operator*( float scalar, const Vector& v )
+operator*( double scalar, const Vector& v )
 {
     return v * scalar;
 }
 
-float
+double
 CalcCos( const Vector& v1, const Vector& v2 )
 {
     return ( v1, v2 ) / ( v1.GetLen() * v2.GetLen() );
 }
 
-float
+double
 CalcSin( const Vector& v1, const Vector& v2 )
 {
     return std::sin( std::acos( CalcCos( v1, v2 ) ) );
 }
 
-float
+double
 CalcVecMulModule( const Vector& v1, const Vector& v2 )
 {
     return v1.GetLen() * v2.GetLen() * CalcSin( v1, v2 );

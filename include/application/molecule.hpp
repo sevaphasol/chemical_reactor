@@ -9,7 +9,7 @@ namespace application {
 
 class Molecule : public sf::Drawable {
   public:
-    Molecule( float r, float x, float y, float vx, float vy, float weight = 0.0f )
+    Molecule( double r, double x, double y, double vx, double vy, double weight )
         : r_( r ), x_( x ), y_( y ), vx_( vx ), vy_( vy ), weight_( weight ) {};
 
     virtual ~Molecule() = default;
@@ -21,7 +21,7 @@ class Molecule : public sf::Drawable {
     };
 
     void
-    Move( float dt )
+    Move( double dt )
     {
         x_ += vx_ * dt;
         y_ += vy_ * dt;
@@ -29,66 +29,72 @@ class Molecule : public sf::Drawable {
         UpdateShapePosition();
     }
 
-    float
+    double
     GetX() const
     {
         return x_;
     }
 
-    float
+    double
     GetY() const
     {
         return y_;
     }
 
-    float
+    double
     GetVx() const
     {
         return vx_;
     }
 
-    float
+    double
     GetVy() const
     {
         return vy_;
     }
 
     void
-    SetVx( float vx )
+    SetVx( double vx )
     {
         vx_ = vx;
     }
 
     void
-    SetVy( float vy )
+    SetVy( double vy )
     {
         vy_ = vy;
     }
 
     void
-    SetX( float x )
+    SetX( double x )
     {
         x_ = x;
         SetShapeX( x );
     }
 
     void
-    SetY( float y )
+    SetY( double y )
     {
         y_ = y;
         SetShapeY( y );
     }
 
-    float
+    double
     GetR() const
     {
         return r_;
     }
 
-    float
+    double
     GetWeight() const
     {
         return weight_;
+    }
+
+    double
+    GetEnergy() const
+    {
+        return weight_ * ( vx_ * vx_ + vy_ * vy_ ) / 2;
     }
 
     Type virtual GetType() const = 0;
@@ -97,14 +103,14 @@ class Molecule : public sf::Drawable {
     static void
     Collide( Molecule& mol1, Molecule& mol2 )
     {
-        float m1      = mol1.GetWeight();
-        float v1x     = mol1.GetVx();
-        float v1y     = mol1.GetVy();
-        float m2      = mol2.GetWeight();
-        float v2x     = mol2.GetVx();
-        float v2y     = mol2.GetVy();
-        float delta_m = m1 - m2;
-        float sum_m   = m1 + m2;
+        double m1      = mol1.GetWeight();
+        double v1x     = mol1.GetVx();
+        double v1y     = mol1.GetVy();
+        double m2      = mol2.GetWeight();
+        double v2x     = mol2.GetVx();
+        double v2y     = mol2.GetVy();
+        double delta_m = m1 - m2;
+        double sum_m   = m1 + m2;
 
         mol1.SetVx( ( delta_m * v1x + 2 * m2 * v2x ) / sum_m );
         mol1.SetVy( ( delta_m * v1y + 2 * m2 * v2y ) / sum_m );
@@ -115,24 +121,24 @@ class Molecule : public sf::Drawable {
     static bool
     CheckCollision( const Molecule& mol1, const Molecule& mol2 )
     {
-        float x1 = mol1.GetX();
-        float y1 = mol1.GetY();
-        float r1 = mol1.GetR();
-        float x2 = mol2.GetX();
-        float y2 = mol2.GetY();
-        float r2 = mol2.GetR();
+        double x1 = mol1.GetX();
+        double y1 = mol1.GetY();
+        double r1 = mol1.GetR();
+        double x2 = mol2.GetX();
+        double y2 = mol2.GetY();
+        double r2 = mol2.GetR();
 
-        float cx1 = x1 + r1;
-        float cy1 = y1 + r1;
-        float cx2 = x2 + r2;
-        float cy2 = y2 + r2;
+        double cx1 = x1 + r1;
+        double cy1 = y1 + r1;
+        double cx2 = x2 + r2;
+        double cy2 = y2 + r2;
 
-        float delta_cx = cx1 - cx2;
-        float delta_cy = cy1 - cy2;
+        double delta_cx = cx1 - cx2;
+        double delta_cy = cy1 - cy2;
 
-        float distance_sq = delta_cx * delta_cx + delta_cy * delta_cy;
+        double distance_sq = delta_cx * delta_cx + delta_cy * delta_cy;
 
-        float critical_distance = r1 + r2;
+        double critical_distance = r1 + r2;
 
         return distance_sq < critical_distance * critical_distance;
     }
@@ -142,21 +148,21 @@ class Molecule : public sf::Drawable {
     UpdateShapePosition() = 0;
 
     virtual void
-    SetShapeX( float x ) = 0;
+    SetShapeX( double x ) = 0;
 
     virtual void
-    SetShapeY( float y ) = 0;
+    SetShapeY( double y ) = 0;
 
   protected:
-    float weight_;
+    double weight_;
 
-    float r_;
+    double r_;
 
-    float x_;
-    float y_;
+    double x_;
+    double y_;
 
-    float vx_;
-    float vy_;
+    double vx_;
+    double vy_;
 };
 
 } // namespace application
