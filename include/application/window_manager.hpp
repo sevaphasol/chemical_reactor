@@ -71,7 +71,7 @@ class WindowManager {
     {
         reactor_.Render( Config::DeltaTime );
         number_plot_.AddPoint( time, reactor_.GetMoleculesCount() );
-        energy_plot_.AddPoint( time, reactor_.CalcSumEnergy() / 1e+6 );
+        energy_plot_.AddPoint( time, reactor_.CalcSumEnergy() );
     }
 
     void

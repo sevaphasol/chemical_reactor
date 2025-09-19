@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowStyle.hpp>
@@ -21,6 +22,19 @@ class Config {
     static inline const sf::Vector2f   NumberPlotSize       = { 300.0f, 300.0f };
     static inline const sf::Vector2f   EnergyPlotPos        = { 800.0f, 450.0f };
     static inline const sf::Vector2f   EnergyPlotSize       = { 300.0f, 300.0f };
+    static inline const sf::Color      GridColor            = { 100, 100, 100 };
+    static inline const sf::Color      AxisColor            = sf::Color::White;
+    static inline const sf::Color      PlotColor            = sf::Color::Red;
+    static inline const sf::Color      TextColor            = sf::Color::White;
+    static constexpr int               GridDivs             = 10;
+    static constexpr const char* const FontName             = "assets/JetBrainsMono-Regular.ttf";
+    static constexpr uint              TitleFontSize        = 16;
+    static constexpr uint              LabelsFontSize       = 12;
+    static constexpr float             HorLabelsXPadding    = 8.5f;
+    static constexpr float             HorLabelsYPadding    = 10.0f;
+    static constexpr float             VerLabelsXPadding    = 60.0f;
+    static constexpr float             VerLabelsYPadding    = 8.5f;
+    static constexpr float             TitleYPadding        = 30.0f;
     static constexpr double            DeltaTime            = 0.02f;
     static constexpr double            CircleMoleculeWeight = 1.0f;
     static constexpr double            SquareMoleculeWeight = 2.0f;
