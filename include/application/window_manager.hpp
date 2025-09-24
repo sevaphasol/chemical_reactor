@@ -1,10 +1,12 @@
 #pragma once
 
 #include "application/config.hpp"
+#include "application/widget.hpp"
 #include <SFML/Graphics.hpp>
 #include <application/molecule.hpp>
 #include <application/reactor.hpp>
 #include <application/graph.hpp>
+#include <memory>
 
 namespace application {
 
@@ -12,11 +14,12 @@ class WindowManager {
   public:
     WindowManager()
         : window_( Config::WindowVideoMode, Config::Title, Config::WindowStyle ),
-          reactor_( Config::ReactorPos, Config::ReactorSize ),
           number_plot_( Config::NumberPlotPos, Config::NumberPlotSize, "Number" ),
           energy_plot_( Config::EnergyPlotPos, Config::EnergyPlotSize, "Energy" )
     {
         window_.setFramerateLimit( 60 );
+        widgets_.emplace_back(
+            std::make_unique<Reactor>( Config::ReactorPos, Config::ReactorSize ) );
     }
 
     void
@@ -37,13 +40,13 @@ class WindowManager {
     void
     AddCircleMolecule( double r, double x, double y, double vx, double vy )
     {
-        reactor_.AddCircleMolecule( r, x, y, vx, vy );
+        // widgets_[0].AddCircleMolecule( r, x, y, vx, vy );
     }
 
     void
     AddSquareMolecule( double r, double x, double y, double vx, double vy )
     {
-        reactor_.AddSquareMolecule( r, x, y, vx, vy );
+        // reactor_.AddSquareMolecule( r, x, y, vx, vy );
     }
 
   private:
@@ -59,19 +62,23 @@ class WindowManager {
                 window_.close();
             }
 
-            int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
-            int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
-
-            reactor_.MovePiston( ( right - left ) * 10 );
+            for ( auto& widget : widgets_ )
+            {
+                widget->HandleEvents();
+            }
         }
     }
 
     void
     Render( double time )
     {
-        reactor_.Render( Config::DeltaTime );
-        number_plot_.AddPoint( time, reactor_.GetMoleculesCount() );
-        energy_plot_.AddPoint( time, reactor_.CalcSumEnergy() );
+        for ( auto& widget : widgets_ )
+        {
+            widget->Render( Config::DeltaTime );
+        }
+
+        number_plot_.AddPoint( time, time );
+        energy_plot_.AddPoint( time, time );
     }
 
     void
@@ -79,7 +86,11 @@ class WindowManager {
     {
         window_.clear();
 
-        window_.draw( reactor_ );
+        for ( const auto& widget : widgets_ )
+        {
+            window_.draw( *widget );
+        }
+
         window_.draw( number_plot_ );
         window_.draw( energy_plot_ );
 
@@ -89,9 +100,10 @@ class WindowManager {
   private:
     sf::RenderWindow window_;
 
-    Reactor reactor_;
-    Graph   number_plot_;
-    Graph   energy_plot_;
+    std::vector<std::unique_ptr<Widget>> widgets_;
+
+    Graph number_plot_;
+    Graph energy_plot_;
 };
 
 } // namespace application

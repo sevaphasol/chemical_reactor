@@ -126,6 +126,7 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o
  /home/sevsol/Projects/chemical_reaction/include/application/molecule.hpp
  /home/sevsol/Projects/chemical_reaction/include/application/molecule_types.hpp
  /home/sevsol/Projects/chemical_reaction/include/application/reactor.hpp
+ /home/sevsol/Projects/chemical_reaction/include/application/widget.hpp
  /home/sevsol/Projects/chemical_reaction/include/application/window_manager.hpp
  /usr/include/SFML/Config.hpp
  /usr/include/SFML/Graphics.hpp

@@ -14,6 +14,7 @@ class CircleMolecule : public Molecule {
         : Molecule( r, x, y, vx, vy, weight ), shape_( r )
     {
         shape_.setPosition( x, y );
+        shape_.setFillColor( Config::CircleMoleculeColor );
     }
 
   private:
@@ -57,6 +58,7 @@ class SquareMolecule : public Molecule {
         : Molecule( r, x, y, vx, vy, weight ), shape_( sf::Vector2f( r * 2, r * 2 ) )
     {
         shape_.setPosition( x, y );
+        shape_.setFillColor( Config::SquareMoleculeColor );
     }
 
   private:

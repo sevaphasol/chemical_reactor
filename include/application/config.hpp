@@ -36,8 +36,13 @@ class Config {
     static constexpr float             VerLabelsYPadding    = 8.5f;
     static constexpr float             TitleYPadding        = 30.0f;
     static constexpr double            DeltaTime            = 0.02f;
+    static constexpr double            CircleMoleculeRadius = 5.0f;
     static constexpr double            CircleMoleculeWeight = 1.0f;
     static constexpr double            SquareMoleculeWeight = 2.0f;
+    static inline const sf::Color      CircleMoleculeColor  = sf::Color::Red;
+    static inline const sf::Color      SquareMoleculeColor  = sf::Color::Green;
+    static constexpr float             SpeedVelocity        = 3000;
+    static constexpr float             SpeedVelocitySq      = SpeedVelocity * SpeedVelocity;
 };
 
 } // namespace application

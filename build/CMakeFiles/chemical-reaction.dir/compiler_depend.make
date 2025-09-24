@@ -124,6 +124,7 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o: /home/sevsol/Projects/chemic
   /home/sevsol/Projects/chemical_reaction/include/application/molecule.hpp \
   /home/sevsol/Projects/chemical_reaction/include/application/molecule_types.hpp \
   /home/sevsol/Projects/chemical_reaction/include/application/reactor.hpp \
+  /home/sevsol/Projects/chemical_reaction/include/application/widget.hpp \
   /home/sevsol/Projects/chemical_reaction/include/application/window_manager.hpp \
   /usr/include/SFML/Config.hpp \
   /usr/include/SFML/Graphics.hpp \
@@ -603,6 +604,10 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o: /home/sevsol/Projects/chemic
 
 /home/sevsol/Projects/chemical_reaction/include/application/reactor.hpp:
 
+/home/sevsol/Projects/chemical_reaction/include/application/widget.hpp:
+
+/usr/include/c++/13/bits/atomic_lockfree_defines.h:
+
 /home/sevsol/Projects/chemical_reaction/include/application/molecule.hpp:
 
 /usr/lib/gcc/x86_64-linux-gnu/13/include/stddef.h:
@@ -632,8 +637,6 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o: /home/sevsol/Projects/chemic
 /usr/include/x86_64-linux-gnu/sys/single_threaded.h:
 
 /usr/include/SFML/Window/Context.hpp:
-
-/usr/include/c++/13/bits/atomic_lockfree_defines.h:
 
 /home/sevsol/Projects/chemical_reaction/include/application/window_manager.hpp:
 
@@ -807,6 +810,10 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o: /home/sevsol/Projects/chemic
 
 /usr/include/c++/13/tr1/special_function_util.h:
 
+/usr/include/c++/13/bits/streambuf.tcc:
+
+/usr/include/c++/13/bits/specfun.h:
+
 /usr/include/c++/13/bits/predefined_ops.h:
 
 /usr/include/x86_64-linux-gnu/bits/pthreadtypes-arch.h:
@@ -846,10 +853,6 @@ CMakeFiles/chemical-reaction.dir/source/main.cpp.o: /home/sevsol/Projects/chemic
 /usr/include/SFML/Window/VideoMode.hpp:
 
 /usr/include/SFML/Graphics/Font.hpp:
-
-/usr/include/c++/13/bits/specfun.h:
-
-/usr/include/c++/13/bits/streambuf.tcc:
 
 /usr/include/x86_64-linux-gnu/bits/typesizes.h:
 

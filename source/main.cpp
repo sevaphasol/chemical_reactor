@@ -23,7 +23,7 @@ main()
 
     for ( int i = 0; i < 100; i++ )
     {
-        manager.AddCircleMolecule( 5,
+        manager.AddCircleMolecule( application::Config::CircleMoleculeRadius,
                                    x_distr( gen ),
                                    y_distr( gen ),
                                    v_distr( gen ),

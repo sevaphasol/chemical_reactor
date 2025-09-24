@@ -2,6 +2,7 @@
 
 #include "application/molecule.hpp"
 #include "application/molecule_types.hpp"
+#include "application/widget.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -15,7 +16,7 @@
 
 namespace application {
 
-class Reactor : public sf::Drawable {
+class Reactor : public Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
@@ -40,14 +41,16 @@ class Reactor : public sf::Drawable {
 
         for ( const auto& molecule : molecules_ )
         {
-            target.draw( *molecule );
+            target.draw( *molecule.ptr );
         }
     }
 
   public:
-    void
-    Render( float elapsed_time )
+    virtual void
+    Render( float elapsed_time ) override
     {
+        std::cerr << "Render reactor" << std::endl;
+
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
@@ -55,10 +58,23 @@ class Reactor : public sf::Drawable {
         HandleWallCollisions();
     }
 
+    virtual void
+    HandleEvents() override
+    {
+        std::cerr << "Handle events" << std::endl;
+
+        int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
+        int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
+
+        MovePiston( ( right - left ) * 10 );
+    }
+
     void
     MovePiston( float dist )
     {
-        float x = sizes_.x + dist;
+        std::cerr
+
+            float x = sizes_.x + dist;
 
         if ( Config::ReactorPos.x < x && x < Config::ReactorPos.x + Config::ReactorSize.x )
         {
@@ -72,37 +88,37 @@ class Reactor : public sf::Drawable {
     {
         for ( auto& mol : molecules_ )
         {
-            float r  = mol->GetR();
-            float x  = mol->GetX();
-            float y  = mol->GetY();
-            float vx = mol->GetVx();
-            float vy = mol->GetVy();
+            float r  = mol.ptr->GetR();
+            float x  = mol.ptr->GetX();
+            float y  = mol.ptr->GetY();
+            float vx = mol.ptr->GetVx();
+            float vy = mol.ptr->GetVy();
 
             float width  = sizes_.x;
             float height = sizes_.y;
 
             if ( x + 2 * r > width )
             {
-                mol->SetVx( -vx );
-                mol->SetX( width - 2 * r );
+                mol.ptr->SetVx( -vx );
+                mol.ptr->SetX( width - 2 * r );
             }
 
             if ( x < 0 )
             {
-                mol->SetVx( -vx );
-                mol->SetX( 0 );
+                mol.ptr->SetVx( -vx );
+                mol.ptr->SetX( 0 );
             }
 
             if ( y + 2 * r > height )
             {
-                mol->SetVy( -vy );
-                mol->SetY( height - 2 * r );
+                mol.ptr->SetVy( -vy );
+                mol.ptr->SetY( height - 2 * r );
             }
 
             if ( y < 0 )
             {
-                mol->SetVy( -vy );
-                mol->SetY( 0 );
+                mol.ptr->SetVy( -vy );
+                mol.ptr->SetY( 0 );
             }
         }
     }
@@ -116,8 +132,8 @@ class Reactor : public sf::Drawable {
         {
             for ( size_t j = i + 1; j < n_molecules; ++j )
             {
-                Molecule& mol1 = *molecules_[i];
-                Molecule& mol2 = *molecules_[j];
+                Molecule& mol1 = *molecules_[i].ptr;
+                Molecule& mol2 = *molecules_[j].ptr;
 
                 if ( Molecule::CheckCollision( mol1, mol2 ) )
                 {
@@ -142,9 +158,9 @@ class Reactor : public sf::Drawable {
 
         for ( const auto& molecule : molecules_ )
         {
-            float m  = molecule->GetWeight();
-            float vx = molecule->GetVx();
-            float vy = molecule->GetVy();
+            float m  = molecule.ptr->GetWeight();
+            float vx = molecule.ptr->GetVx();
+            float vy = molecule.ptr->GetVy();
 
             energy += m * ( vx * vx + vy * vy ) / 2;
         }
@@ -176,26 +192,67 @@ class Reactor : public sf::Drawable {
     void
     PostRendering( float elapsed_time )
     {
-        std::sort( remove_indexes_.begin(), remove_indexes_.end(), []( size_t a, size_t b ) {
-            return a > b;
-        } );
+        //         std::sort( remove_indexes_.begin(), remove_indexes_.end(), []( size_t a, size_t b
+        //         ) {
+        //             return a > b;
+        //         } );
+        //
+        //         for ( const auto& req : remove_indexes_ )
+        //         {
+        //             if ( req < molecules_.size() )
+        //             {
+        //                 molecules_.erase( molecules_.begin() + req );
+        //             }
+        //         }
 
-        for ( const auto& req : remove_indexes_ )
+        //         int j = 0;
+        //
+        //         for ( int i = 0; i < molecules_.size(); i++ )
+        //         {
+        //             if ( molecules_[i].need_remove )
+        //             {
+        //                 if ( j < new_molecules_.size() )
+        //                 {
+        //                     molecules_[i] = std::move( new_molecules_[j] );
+        //                 }
+        //                 i--;
+        //             }
+        //         }
+        //
+        //         for ( auto& req : new_molecules_ )
+        //         {
+        //             molecules_.push_back( std::move( req ) );
+        //         }
+        //
+        //         for ( auto& mol : molecules_ )
+        //         {
+        //             mol.ptr->Move( elapsed_time );
+        //         }
+        size_t new_idx = 0;
+
+        for ( size_t i = 0; i < molecules_.size(); i++ )
         {
-            if ( req < molecules_.size() )
+            if ( molecules_[i].need_remove )
             {
-                molecules_.erase( molecules_.begin() + req );
+                if ( new_idx < new_molecules_.size() )
+                {
+                    molecules_[i] = std::move( new_molecules_[new_idx] );
+                    new_idx++;
+                } else
+                {
+                    molecules_.erase( molecules_.begin() + i );
+                }
             }
         }
 
-        for ( auto& req : new_molecules_ )
+        for ( size_t idx = new_idx; idx < new_molecules_.size(); ++idx )
         {
-            molecules_.push_back( std::move( req ) );
+            molecules_.push_back( std::move( new_molecules_[idx] ) );
         }
 
         for ( auto& mol : molecules_ )
         {
-            mol->Move( elapsed_time );
+            mol.ptr->Move( elapsed_time );
         }
     }
 
@@ -213,27 +270,63 @@ class Reactor : public sf::Drawable {
     void
     Collide( size_t mol1_idx, size_t mol2_idx )
     {
-        remove_indexes_.push_back( mol1_idx );
-        remove_indexes_.push_back( mol2_idx );
+        // remove_indexes_.push_back( mol1_idx );
+        // remove_indexes_.push_back( mol2_idx );
+        MoleculeInfo& mol1 = molecules_[mol1_idx];
+        MoleculeInfo& mol2 = molecules_[mol2_idx];
 
-        Molecule& mol1 = *molecules_[mol1_idx];
-        Molecule& mol2 = *molecules_[mol2_idx];
+        mol1.need_remove = true;
+        mol2.need_remove = true;
 
-        ( this->*vtable_[mol1.GetType()][mol2.GetType()] )( mol1, mol2 );
+        ( this->*vtable_[mol1.ptr->GetType()][mol2.ptr->GetType()] )( *mol1.ptr, *mol2.ptr );
     }
 
     void
     CollideCircle( Molecule& mol1, Molecule& mol2 )
     {
-        float r      = ( mol1.GetR() + mol2.GetR() ) / 2.0f;
-        float x      = ( mol1.GetX() + mol2.GetX() ) / 2.0f;
-        float y      = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
-        float m      = mol1.GetWeight() + mol2.GetWeight();
-        float energy = mol1.GetEnergy() + mol2.GetEnergy();
-        float theta  = GetRandomAngle();
-        float v      = sqrt( 2 * energy / m );
-        float vx     = v * std::cos( theta );
-        float vy     = v * std::sin( theta );
+        //         float r   = ( mol1.GetR() + mol2.GetR() ) / 2.0f;
+        //         float x   = ( mol1.GetX() + mol2.GetX() ) / 2.0f;
+        //         float y   = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
+        //         float m1  = mol1.GetWeight();
+        //         float m2  = mol2.GetWeight();
+        //         float v1x = mol1.GetVx();
+        //         float v2x = mol2.GetVx();
+        //         float v1y = mol1.GetVy();
+        //         float v2y = mol2.GetVy();
+        //
+        //         float p1x = m1 * v1x;
+        //         float p2x = m2 * v2x;
+        //         float p1y = m1 * v1y;
+        //         float p2y = m2 * v2y;
+        //
+        //         float px   = p1x + p2x;
+        //         float py   = p1y + p2y;
+        //         float p_sq = px * px + py * py;
+        //
+        //         constexpr float c_sq = Config::SpeedVelocitySq;
+        //
+        //         float energy    = mol1.GetFullEnergy() + mol2.GetFullEnergy();
+        //         float energy_sq = energy * energy;
+        //
+        //         float m =
+        //             ( 2 * energy + sqrt( 4 * energy_sq - 8 * p_sq * c_sq / energy_sq ) ) / ( 4 *
+        //             c_sq );
+        //
+        //         float vx = px / m;
+        //         float vy = py / m;
+        //
+        //         new_molecules_.push_back( { std::make_unique<SquareMolecule>( r, x, y, vx, vy, m
+        //         ) } );
+
+        float r          = ( mol1.GetR() + mol2.GetR() ) / 2.0f;
+        float x          = ( mol1.GetX() + mol2.GetX() ) / 2.0f;
+        float y          = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
+        float m          = mol1.GetWeight() + mol2.GetWeight();
+        float energy     = mol1.GetEnergy() + mol2.GetEnergy();
+        float disp_angle = GetRandomAngle();
+        float v          = sqrt( 2 * energy / m );
+        float vx         = v * std::cos( disp_angle );
+        float vy         = v * std::sin( disp_angle );
 
         new_molecules_.push_back( { std::make_unique<SquareMolecule>( r, x, y, vx, vy, m ) } );
     }
@@ -246,7 +339,7 @@ class Reactor : public sf::Drawable {
         float y             = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
         float total_circles = mol1.GetWeight() + mol2.GetWeight();
         float energy        = mol1.GetEnergy() + mol2.GetEnergy();
-        float disp_distance = 2 * r / std::sin( M_PI / total_circles );
+        float disp_distance = 2 * Config::CircleMoleculeRadius / std::sin( M_PI / total_circles );
 
         float circle_energy = energy / total_circles;
         float v_circle      = sqrt( 2 * circle_energy / Config::CircleMoleculeWeight );
@@ -261,7 +354,7 @@ class Reactor : public sf::Drawable {
             float spawn_y = y + disp_distance * sin_disp_angle;
 
             new_molecules_.push_back(
-                { std::make_unique<CircleMolecule>( r,
+                { std::make_unique<CircleMolecule>( Config::CircleMoleculeRadius,
                                                     spawn_x,
                                                     spawn_y,
                                                     v_circle * cos_disp_angle,
@@ -273,9 +366,18 @@ class Reactor : public sf::Drawable {
   private:
     std::array<std::array<CollideFuncT, Molecule::N_TYPES>, Molecule::N_TYPES> vtable_;
 
-    std::vector<std::unique_ptr<Molecule>> molecules_;
-    std::vector<size_t>                    remove_indexes_;
-    std::vector<std::unique_ptr<Molecule>> new_molecules_;
+    struct MoleculeInfo
+    {
+        MoleculeInfo( std::unique_ptr<Molecule> mol )
+            : ptr( std::move( mol ) ), need_remove( false ) {};
+
+        std::unique_ptr<Molecule> ptr;
+        bool                      need_remove;
+    };
+
+    std::vector<MoleculeInfo> molecules_;
+    std::vector<size_t>       remove_indexes_;
+    std::vector<MoleculeInfo> new_molecules_;
 
     sf::Vector2f       pos_;
     sf::Vector2f       sizes_;

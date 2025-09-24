@@ -5,6 +5,8 @@
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <iostream>
 
+#include "config.hpp"
+
 namespace application {
 
 class Molecule : public sf::Drawable {
@@ -92,9 +94,28 @@ class Molecule : public sf::Drawable {
     }
 
     double
-    GetEnergy() const
+    GetKineticEnergy() const
     {
         return weight_ * ( vx_ * vx_ + vy_ * vy_ ) / 2;
+    }
+
+    double
+    GetPotentialEnergy() const
+    {
+        // return weight_ * Config::SpeedVelocitySq;
+        return 0.0;
+    }
+
+    double
+    GetFullEnergy() const
+    {
+        return GetKineticEnergy() + GetPotentialEnergy();
+    }
+
+    double
+    GetEnergy() const
+    {
+        return GetKineticEnergy();
     }
 
     Type virtual GetType() const = 0;
