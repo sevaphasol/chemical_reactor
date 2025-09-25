@@ -3,23 +3,23 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/Vector2.hpp>
 
-#include "application/reactor_state.hpp"
+#include "gui/container_state.hpp"
 
-namespace application {
+namespace gui {
 
 class Widget : public sf::Drawable {
   public:
-    Widget() = default;
+    Widget( sf::Vector2f pos, sf::Vector2f size ) : pos_( pos ), size_( size ) {}
 
     virtual void
-    HandleEvents() = 0;
+    HandleEvents( ContainerState& global_state ) = 0;
 
     virtual void
-    Update( ReactorState& ) = 0;
+    Update( ContainerState& global_state ) = 0;
 
-  private:
+  protected:
     sf::Vector2f pos_;
     sf::Vector2f size_;
 };
 
-} // namespace application
+} // namespace gui

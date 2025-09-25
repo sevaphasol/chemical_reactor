@@ -3,11 +3,8 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-#include <iostream>
 
-#include "config.hpp"
-
-namespace application {
+namespace reactor {
 
 class Molecule : public sf::Drawable {
   public:
@@ -186,4 +183,4 @@ class Molecule : public sf::Drawable {
     double vy_;
 };
 
-} // namespace application
+} // namespace reactor

@@ -1,13 +1,13 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Context.hpp>
-#include "application/window_manager.hpp"
+#include "reactor/window.hpp"
 
 int
 main()
 {
-    application::WindowManager manager;
+    reactor::ReactorWindow application;
 
-    manager.Run();
+    application.Run();
 
     return 0;
 }

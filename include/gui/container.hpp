@@ -1,15 +1,15 @@
 #pragma once
 
-#include "application/widget.hpp"
+#include "gui/container_state.hpp"
+#include "gui/widget.hpp"
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <memory>
 #include <vector>
 
-namespace application {
+namespace gui {
 
-template<typename GlobalStateType>
 class Container : public sf::Drawable {
   public:
     Container() = default;
@@ -19,7 +19,7 @@ class Container : public sf::Drawable {
     {
         for ( auto& widget : widgets_ )
         {
-            widget->HandleEvents();
+            widget->HandleEvents( *state_ );
         }
     }
 
@@ -28,7 +28,7 @@ class Container : public sf::Drawable {
     {
         for ( auto& widget : widgets_ )
         {
-            widget->Update( global_state_ );
+            widget->Update( *state_ );
         }
     }
 
@@ -36,6 +36,12 @@ class Container : public sf::Drawable {
     AddWidget( std::unique_ptr<Widget> widget )
     {
         widgets_.push_back( std::move( widget ) );
+    }
+
+    void
+    SetState( std::unique_ptr<ContainerState>&& state )
+    {
+        state_ = std::move( state );
     }
 
   private:
@@ -49,9 +55,9 @@ class Container : public sf::Drawable {
     }
 
   private:
-    std::vector<std::unique_ptr<Widget>> widgets_;
+    std::unique_ptr<ContainerState> state_;
 
-    GlobalStateType global_state_;
+    std::vector<std::unique_ptr<Widget>> widgets_;
 };
 
-} // namespace application
+} // namespace gui

@@ -26,6 +26,7 @@ class Config {
     static inline const sf::Color      AxisColor            = sf::Color::White;
     static inline const sf::Color      PlotColor            = sf::Color::Red;
     static inline const sf::Color      TextColor            = sf::Color::White;
+    static inline const sf::Color      ButtonColor          = sf::Color::Black;
     static constexpr int               GridDivs             = 10;
     static constexpr const char* const FontName             = "assets/JetBrainsMono-Regular.ttf";
     static constexpr uint              TitleFontSize        = 16;

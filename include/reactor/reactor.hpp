@@ -1,10 +1,10 @@
 #pragma once
 
-#include "application/config.hpp"
-#include "application/molecule.hpp"
-#include "application/molecule_types.hpp"
-#include "application/reactor_state.hpp"
-#include "application/widget.hpp"
+#include "gui/container_state.hpp"
+#include "config.hpp"
+#include "reactor/molecule.hpp"
+#include "reactor/molecule_types.hpp"
+#include "gui/widget.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -17,13 +17,23 @@
 #include <random>
 #include <vector>
 
-namespace application {
+namespace reactor {
 
-class Reactor : public Widget {
+struct ReactorState : public gui::ContainerState
+{
+    ReactorState() : elapsed_time( 0 ), full_energy( 0 ), n_molecules( 0 ) {};
+    ~ReactorState() = default;
+
+    float elapsed_time;
+    float full_energy;
+    float n_molecules;
+};
+
+class Reactor : public gui::Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
-    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size ) : pos_( pos ), sizes_( size )
+    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size ) : gui::Widget( pos, size )
     {
         vtable_[Molecule::CIRCLE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::CIRCLE][Molecule::SQUARE] = &Reactor::CollideCircle;
@@ -50,8 +60,10 @@ class Reactor : public Widget {
 
   public:
     virtual void
-    Update( ReactorState& reactor_state ) override
+    Update( gui::ContainerState& container_state ) override
     {
+        ReactorState& reactor_state = dynamic_cast<ReactorState&>( container_state );
+
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
@@ -67,7 +79,7 @@ class Reactor : public Widget {
     }
 
     virtual void
-    HandleEvents() override
+    HandleEvents( gui::ContainerState& container_state ) override
     {
         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
@@ -78,19 +90,20 @@ class Reactor : public Widget {
 
         if ( add )
         {
-            AddCircleMolecule( Config::CircleMoleculeRadius, 100, 10, 0, 10 );
+            AddCircleMolecule( application::Config::CircleMoleculeRadius, 100, 10, 0, 10 );
         }
     }
 
     void
     MovePiston( float dist )
     {
-        float x = sizes_.x + dist;
+        float x = size_.x + dist;
 
-        if ( Config::ReactorPos.x < x && x < Config::ReactorPos.x + Config::ReactorSize.x )
+        if ( application::Config::ReactorPos.x < x &&
+             x < application::Config::ReactorPos.x + application::Config::ReactorSize.x )
         {
-            sizes_.x += dist;
-            border_.setSize( sizes_ );
+            size_.x += dist;
+            border_.setSize( size_ );
         }
     }
 
@@ -105,8 +118,8 @@ class Reactor : public Widget {
             float vx = mol.ptr->GetVx();
             float vy = mol.ptr->GetVy();
 
-            float width  = sizes_.x;
-            float height = sizes_.y;
+            float width  = size_.x;
+            float height = size_.y;
 
             if ( x + 2 * r > width )
             {
@@ -184,14 +197,14 @@ class Reactor : public Widget {
     AddCircleMolecule( float r, float x, float y, float vx, float vy )
     {
         molecules_.emplace_back( std::make_unique<CircleMolecule>(
-            CircleMolecule( r, x, y, vx, vy, Config::CircleMoleculeWeight ) ) );
+            CircleMolecule( r, x, y, vx, vy, application::Config::CircleMoleculeWeight ) ) );
     }
 
     void
     AddSquareMolecule( float r, float x, float y, float vx, float vy )
     {
         molecules_.emplace_back( std::make_unique<SquareMolecule>(
-            SquareMolecule( r, x, y, vx, vy, Config::SquareMoleculeWeight ) ) );
+            SquareMolecule( r, x, y, vx, vy, application::Config::SquareMoleculeWeight ) ) );
     }
 
     void
@@ -351,10 +364,11 @@ class Reactor : public Widget {
         float y             = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
         float total_circles = mol1.GetWeight() + mol2.GetWeight();
         float energy        = mol1.GetEnergy() + mol2.GetEnergy();
-        float disp_distance = 2 * Config::CircleMoleculeRadius / std::sin( M_PI / total_circles );
+        float disp_distance =
+            2 * application::Config::CircleMoleculeRadius / std::sin( M_PI / total_circles );
 
         float circle_energy = energy / total_circles;
-        float v_circle      = sqrt( 2 * circle_energy / Config::CircleMoleculeWeight );
+        float v_circle      = sqrt( 2 * circle_energy / application::Config::CircleMoleculeWeight );
 
         for ( int i = 0; i < total_circles; i++ )
         {
@@ -366,12 +380,12 @@ class Reactor : public Widget {
             float spawn_y = y + disp_distance * sin_disp_angle;
 
             new_molecules_.push_back(
-                { std::make_unique<CircleMolecule>( Config::CircleMoleculeRadius,
+                { std::make_unique<CircleMolecule>( application::Config::CircleMoleculeRadius,
                                                     spawn_x,
                                                     spawn_y,
                                                     v_circle * cos_disp_angle,
                                                     v_circle * sin_disp_angle,
-                                                    Config::CircleMoleculeWeight ) } );
+                                                    application::Config::CircleMoleculeWeight ) } );
         }
     }
 
@@ -391,9 +405,7 @@ class Reactor : public Widget {
     std::vector<size_t>       remove_indexes_;
     std::vector<MoleculeInfo> new_molecules_;
 
-    sf::Vector2f       pos_;
-    sf::Vector2f       sizes_;
     sf::RectangleShape border_;
 };
 
-} // namespace application
+} // namespace reactor

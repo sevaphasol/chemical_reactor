@@ -3,10 +3,10 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
-#include "application/molecule.hpp"
-#include "application/config.hpp"
+#include "reactor/molecule.hpp"
+#include "config.hpp"
 
-namespace application {
+namespace reactor {
 
 class CircleMolecule : public Molecule {
   public:
@@ -14,7 +14,7 @@ class CircleMolecule : public Molecule {
         : Molecule( r, x, y, vx, vy, weight ), shape_( r )
     {
         shape_.setPosition( x, y );
-        shape_.setFillColor( Config::CircleMoleculeColor );
+        shape_.setFillColor( application::Config::CircleMoleculeColor );
     }
 
   private:
@@ -58,7 +58,7 @@ class SquareMolecule : public Molecule {
         : Molecule( r, x, y, vx, vy, weight ), shape_( sf::Vector2f( r * 2, r * 2 ) )
     {
         shape_.setPosition( x, y );
-        shape_.setFillColor( Config::SquareMoleculeColor );
+        shape_.setFillColor( application::Config::SquareMoleculeColor );
     }
 
   private:
@@ -96,4 +96,4 @@ class SquareMolecule : public Molecule {
     sf::RectangleShape shape_;
 };
 
-} // namespace application
+} // namespace reactor

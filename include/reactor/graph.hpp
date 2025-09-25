@@ -1,6 +1,8 @@
 #pragma once
 
-#include "application/widget.hpp"
+#include "gui/container_state.hpp"
+#include "gui/widget.hpp"
+#include "reactor/reactor.hpp"
 #include <SFML/Graphics.hpp>
 #include <iomanip>
 #include <ios>
@@ -9,18 +11,18 @@
 #include <algorithm>
 #include <string>
 #include <sstream>
-#include <application/config.hpp>
+#include <config.hpp>
 
-namespace application {
+namespace reactor {
 
-class Graph : public Widget {
+class ReactorGraph : public gui::Widget {
   public:
-    Graph( sf::Vector2f pos, sf::Vector2f size, const char* name )
-        : pos_( pos ), size_( size ), data_bounds_{ 0, 1, 0, 1 }
+    ReactorGraph( sf::Vector2f pos, sf::Vector2f size, const char* name )
+        : gui::Widget( pos, size ), data_bounds_{ 0, 1, 0, 1 }
     {
         title_ = name;
 
-        if ( !font_.loadFromFile( Config::FontName ) )
+        if ( !font_.loadFromFile( application::Config::FontName ) )
         {
             std::cerr << "Font has not been loaded" << std::endl;
         }
@@ -42,17 +44,19 @@ class Graph : public Widget {
     {
         title_text_.setFont( font_ );
         title_text_.setString( title_ );
-        title_text_.setCharacterSize( Config::TitleFontSize );
-        title_text_.setFillColor( Config::TextColor );
+        title_text_.setCharacterSize( application::Config::TitleFontSize );
+        title_text_.setFillColor( application::Config::TextColor );
     }
 
     virtual void
-    HandleEvents() override {};
+    HandleEvents( gui::ContainerState& state ) override {};
 
     virtual void
-    Update( ReactorState& state ) override
+    Update( gui::ContainerState& state ) override
     {
-        AddPoint( state.elapsed_time, state.n_molecules );
+        ReactorState& reactor_state = dynamic_cast<ReactorState&>( state );
+
+        AddPoint( reactor_state.elapsed_time, reactor_state.n_molecules );
     }
 
   private:
@@ -98,16 +102,16 @@ class Graph : public Widget {
     DrawGridLines( sf::RenderTarget& target, bool horizontal ) const
     {
         sf::Vertex line[2];
-        line[0].color = Config::GridColor;
-        line[1].color = Config::GridColor;
+        line[0].color = application::Config::GridColor;
+        line[1].color = application::Config::GridColor;
 
         double min_val = horizontal ? data_bounds_.min_y : data_bounds_.min_x;
         double max_val = horizontal ? data_bounds_.max_y : data_bounds_.max_x;
         double range   = max_val - min_val;
 
-        for ( int i = 0; i <= Config::GridDivs; i++ )
+        for ( int i = 0; i <= application::Config::GridDivs; i++ )
         {
-            double logical_val  = min_val + i * range / Config::GridDivs;
+            double logical_val  = min_val + i * range / application::Config::GridDivs;
             double screen_coord = 0;
 
             if ( horizontal )
@@ -133,8 +137,8 @@ class Graph : public Widget {
     {
         sf::Text label;
         label.setFont( font_ );
-        label.setCharacterSize( Config::LabelsFontSize );
-        label.setFillColor( Config::TextColor );
+        label.setCharacterSize( application::Config::LabelsFontSize );
+        label.setFillColor( application::Config::TextColor );
 
         DrawLabelsForAxis( target, label, false );
     }
@@ -146,21 +150,21 @@ class Graph : public Widget {
         double max_val = x_axis ? data_bounds_.max_x : data_bounds_.max_y;
         double range   = max_val - min_val;
 
-        for ( int i = 0; i <= Config::GridDivs; i++ )
+        for ( int i = 0; i <= application::Config::GridDivs; i++ )
         {
-            double logical_val = min_val + i * range / Config::GridDivs;
+            double logical_val = min_val + i * range / application::Config::GridDivs;
 
             double screen_x = 0;
             double screen_y = 0;
             if ( x_axis )
             {
-                screen_x = LogicalToScreenX( logical_val ) - Config::HorLabelsXPadding;
-                screen_y = LogicalToScreenY( 0.0f ) - Config::HorLabelsYPadding;
+                screen_x = LogicalToScreenX( logical_val ) - application::Config::HorLabelsXPadding;
+                screen_y = LogicalToScreenY( 0.0f ) - application::Config::HorLabelsYPadding;
 
             } else
             {
-                screen_x = LogicalToScreenX( 0.0f ) - Config::VerLabelsXPadding;
-                screen_y = LogicalToScreenY( logical_val ) - Config::VerLabelsYPadding;
+                screen_x = LogicalToScreenX( 0.0f ) - application::Config::VerLabelsXPadding;
+                screen_y = LogicalToScreenY( logical_val ) - application::Config::VerLabelsYPadding;
             }
 
             std::ostringstream oss;
@@ -176,7 +180,7 @@ class Graph : public Widget {
     {
         title_text_.setPosition( pos_.x + size_.x / 2.0f -
                                      title_text_.getGlobalBounds().width / 2.0f,
-                                 pos_.y - Config::TitleYPadding );
+                                 pos_.y - application::Config::TitleYPadding );
         target.draw( title_text_ );
     }
 
@@ -206,7 +210,7 @@ class Graph : public Widget {
             double screen_y = LogicalToScreenY( raw_points_[i].y );
 
             plot_[i].position = sf::Vector2f( screen_x, screen_y );
-            plot_[i].color    = Config::PlotColor;
+            plot_[i].color    = application::Config::PlotColor;
         }
     }
 
@@ -227,8 +231,6 @@ class Graph : public Widget {
     std::string      title_;
     mutable sf::Text title_text_;
 
-    sf::Vector2f pos_;
-    sf::Vector2f size_;
     sf::Vector2f step_;
 
     struct
@@ -240,4 +242,4 @@ class Graph : public Widget {
     std::vector<sf::Vector2f> raw_points_;
 };
 
-} // namespace application
+} // namespace reactor

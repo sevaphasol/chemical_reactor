@@ -1,29 +1,26 @@
 #pragma once
 
-#include "application/config.hpp"
-#include "application/container.hpp"
-#include "application/reactor_state.hpp"
+#include "config.hpp"
+#include "gui/container.hpp"
 #include <SFML/Graphics.hpp>
-#include <application/molecule.hpp>
-#include <application/reactor.hpp>
-#include <application/graph.hpp>
+#include <reactor/molecule.hpp>
+#include <reactor/reactor.hpp>
+#include <reactor/graph.hpp>
 #include <memory>
 
-namespace application {
+namespace gui {
 
 class WindowManager {
   public:
-    WindowManager() : window_( Config::WindowVideoMode, Config::Title, Config::WindowStyle )
+    WindowManager()
+        : window_( application::Config::WindowVideoMode,
+                   application::Config::Title,
+                   application::Config::WindowStyle )
     {
         window_.setFramerateLimit( 60 );
-
-        reactor_container_.AddWidget(
-            std::make_unique<Reactor>( Config::ReactorPos, Config::ReactorSize ) );
-        reactor_container_.AddWidget(
-            std::make_unique<Graph>( Config::NumberPlotPos, Config::NumberPlotSize, "Number" ) );
-        reactor_container_.AddWidget(
-            std::make_unique<Graph>( Config::EnergyPlotPos, Config::EnergyPlotSize, "Energy" ) );
     }
+
+    virtual ~WindowManager() = default;
 
     void
     Run()
@@ -50,27 +47,39 @@ class WindowManager {
             }
         }
 
-        reactor_container_.HandleEvents();
+        for ( auto& container : containers_ )
+        {
+            container->HandleEvents();
+        }
     }
 
     void
     Update()
     {
-        reactor_container_.Update();
+        for ( auto& container : containers_ )
+        {
+            container->Update();
+        }
     }
 
     void
     Draw()
     {
         window_.clear();
-        window_.draw( reactor_container_ );
+
+        for ( const auto& container : containers_ )
+        {
+            window_.draw( *container );
+        }
+
         window_.display();
     }
 
+  protected:
+    std::vector<std::unique_ptr<Container>> containers_;
+
   private:
     sf::RenderWindow window_;
-
-    Container<ReactorState> reactor_container_;
 };
 
-} // namespace application
+} // namespace gui
