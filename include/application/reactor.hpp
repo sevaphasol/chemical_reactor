@@ -1,13 +1,16 @@
 #pragma once
 
+#include "application/config.hpp"
 #include "application/molecule.hpp"
 #include "application/molecule_types.hpp"
+#include "application/reactor_state.hpp"
 #include "application/widget.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
 #include <memory>
@@ -20,14 +23,14 @@ class Reactor : public Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
-    Reactor( const sf::Vector2f& pos, const sf::Vector2f& sizes ) : pos_( pos ), sizes_( sizes )
+    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size ) : pos_( pos ), sizes_( size )
     {
         vtable_[Molecule::CIRCLE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::CIRCLE][Molecule::SQUARE] = &Reactor::CollideCircle;
         vtable_[Molecule::SQUARE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::SQUARE][Molecule::SQUARE] = &Reactor::CollideSquareSquare;
 
-        border_.setSize( sizes );
+        border_.setSize( size );
         border_.setFillColor( sf::Color::Transparent );
         border_.setOutlineColor( sf::Color::Red );
         border_.setOutlineThickness( 2.0f );
@@ -47,34 +50,42 @@ class Reactor : public Widget {
 
   public:
     virtual void
-    Render( float elapsed_time ) override
+    Update( ReactorState& reactor_state ) override
     {
-        std::cerr << "Render reactor" << std::endl;
-
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
-        PostRendering( elapsed_time );
+        PostRendering( reactor_state.elapsed_time );
         HandleWallCollisions();
+        //
+        //         for ( const auto& molecule : molecules_ )
+        //         {
+        //             reactor_state.elapsed_time += molecule.ptr->GetFullEnergy();
+        //         }
+        //
+        reactor_state.n_molecules = molecules_.size();
     }
 
     virtual void
     HandleEvents() override
     {
-        std::cerr << "Handle events" << std::endl;
-
         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
 
         MovePiston( ( right - left ) * 10 );
+
+        bool add = sf::Keyboard::isKeyPressed( sf::Keyboard::A );
+
+        if ( add )
+        {
+            AddCircleMolecule( Config::CircleMoleculeRadius, 100, 10, 0, 10 );
+        }
     }
 
     void
     MovePiston( float dist )
     {
-        std::cerr
-
-            float x = sizes_.x + dist;
+        float x = sizes_.x + dist;
 
         if ( Config::ReactorPos.x < x && x < Config::ReactorPos.x + Config::ReactorSize.x )
         {
@@ -128,6 +139,11 @@ class Reactor : public Widget {
     {
         size_t n_molecules = molecules_.size();
 
+        if ( n_molecules == 0 )
+        {
+            return;
+        }
+
         for ( size_t i = 0; i < n_molecules - 1; ++i )
         {
             for ( size_t j = i + 1; j < n_molecules; ++j )
@@ -158,11 +174,7 @@ class Reactor : public Widget {
 
         for ( const auto& molecule : molecules_ )
         {
-            float m  = molecule.ptr->GetWeight();
-            float vx = molecule.ptr->GetVx();
-            float vy = molecule.ptr->GetVy();
-
-            energy += m * ( vx * vx + vy * vy ) / 2;
+            energy += molecule.ptr->GetFullEnergy();
         }
 
         return energy;

@@ -1,5 +1,6 @@
 #pragma once
 
+#include "application/widget.hpp"
 #include <SFML/Graphics.hpp>
 #include <iomanip>
 #include <ios>
@@ -12,7 +13,7 @@
 
 namespace application {
 
-class Graph : public sf::Drawable {
+class Graph : public Widget {
   public:
     Graph( sf::Vector2f pos, sf::Vector2f size, const char* name )
         : pos_( pos ), size_( size ), data_bounds_{ 0, 1, 0, 1 }
@@ -43,6 +44,15 @@ class Graph : public sf::Drawable {
         title_text_.setString( title_ );
         title_text_.setCharacterSize( Config::TitleFontSize );
         title_text_.setFillColor( Config::TextColor );
+    }
+
+    virtual void
+    HandleEvents() override {};
+
+    virtual void
+    Update( ReactorState& state ) override
+    {
+        AddPoint( state.elapsed_time, state.n_molecules );
     }
 
   private:

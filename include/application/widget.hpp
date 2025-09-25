@@ -3,6 +3,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/System/Vector2.hpp>
 
+#include "application/reactor_state.hpp"
+
 namespace application {
 
 class Widget : public sf::Drawable {
@@ -13,7 +15,7 @@ class Widget : public sf::Drawable {
     HandleEvents() = 0;
 
     virtual void
-    Render( float elapsed_time ) = 0;
+    Update( ReactorState& ) = 0;
 
   private:
     sf::Vector2f pos_;
