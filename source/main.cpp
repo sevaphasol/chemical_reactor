@@ -1,8 +1,5 @@
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Context.hpp>
-#include <exception>
-#include <random>
-
 #include "application/window_manager.hpp"
 
 int

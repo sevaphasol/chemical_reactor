@@ -16,13 +16,12 @@ class WindowManager {
     WindowManager() : window_( Config::WindowVideoMode, Config::Title, Config::WindowStyle )
     {
         window_.setFramerateLimit( 60 );
-        containers_.emplace_back( Container<ReactorState>() );
 
-        containers_[0].AddWidget(
+        reactor_container_.AddWidget(
             std::make_unique<Reactor>( Config::ReactorPos, Config::ReactorSize ) );
-        containers_[0].AddWidget(
+        reactor_container_.AddWidget(
             std::make_unique<Graph>( Config::NumberPlotPos, Config::NumberPlotSize, "Number" ) );
-        containers_[0].AddWidget(
+        reactor_container_.AddWidget(
             std::make_unique<Graph>( Config::EnergyPlotPos, Config::EnergyPlotSize, "Energy" ) );
     }
 
@@ -51,38 +50,27 @@ class WindowManager {
             }
         }
 
-        for ( auto& container : containers_ )
-        {
-            container.HandleEvents();
-        }
+        reactor_container_.HandleEvents();
     }
 
     void
     Update()
     {
-        for ( auto& container : containers_ )
-        {
-            container.Update();
-        }
+        reactor_container_.Update();
     }
 
     void
     Draw()
     {
         window_.clear();
-
-        for ( const auto& container : containers_ )
-        {
-            window_.draw( *widget );
-        }
-
+        window_.draw( reactor_container_ );
         window_.display();
     }
 
   private:
     sf::RenderWindow window_;
 
-    std::vector<Container<ReactorState>> containers_;
+    Container<ReactorState> reactor_container_;
 };
 
 } // namespace application
