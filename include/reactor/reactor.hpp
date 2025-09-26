@@ -2,6 +2,7 @@
 
 #include "gui/container_state.hpp"
 #include "config.hpp"
+#include "gui/draggable.hpp"
 #include "reactor/molecule.hpp"
 #include "reactor/molecule_types.hpp"
 #include "gui/widget.hpp"
@@ -10,9 +11,11 @@
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
 #include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
+#include <iostream>
 #include <memory>
 #include <random>
 #include <vector>
@@ -24,12 +27,13 @@ struct ReactorState : public gui::ContainerState
     ReactorState() : elapsed_time( 0 ), full_energy( 0 ), n_molecules( 0 ) {};
     ~ReactorState() = default;
 
+    float delta_time;
     float elapsed_time;
     float full_energy;
     float n_molecules;
 };
 
-class Reactor : public gui::Widget {
+class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
@@ -67,20 +71,20 @@ class Reactor : public gui::Widget {
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
-        PostRendering( reactor_state.elapsed_time );
+        PostRendering( reactor_state.delta_time );
         HandleWallCollisions();
-        //
-        //         for ( const auto& molecule : molecules_ )
-        //         {
-        //             reactor_state.elapsed_time += molecule.ptr->GetFullEnergy();
-        //         }
-        //
+
+        reactor_state.elapsed_time += application::Config::DeltaTime;
+        reactor_state.delta_time  = application::Config::DeltaTime;
+        reactor_state.full_energy = CalcSumEnergy();
         reactor_state.n_molecules = molecules_.size();
     }
 
     virtual void
-    HandleEvents( gui::ContainerState& container_state ) override
+    HandleEvents( const sf::Event& event ) override
     {
+        HandleDragEvent( event );
+
         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
 
@@ -215,7 +219,7 @@ class Reactor : public gui::Widget {
     }
 
     void
-    PostRendering( float elapsed_time )
+    PostRendering( float delta_time )
     {
         //         std::sort( remove_indexes_.begin(), remove_indexes_.end(), []( size_t a, size_t b
         //         ) {
@@ -277,7 +281,7 @@ class Reactor : public gui::Widget {
 
         for ( auto& mol : molecules_ )
         {
-            mol.ptr->Move( elapsed_time );
+            mol.ptr->Move( delta_time );
         }
     }
 

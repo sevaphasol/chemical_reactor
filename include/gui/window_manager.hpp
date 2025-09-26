@@ -45,11 +45,11 @@ class WindowManager {
             {
                 window_.close();
             }
-        }
 
-        for ( auto& container : containers_ )
-        {
-            container->HandleEvents();
+            for ( auto& container : containers_ )
+            {
+                container->HandleEvents( event );
+            }
         }
     }
 

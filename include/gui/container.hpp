@@ -5,6 +5,8 @@
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/System/Vector2.hpp>
+#include <SFML/Window/Event.hpp>
 #include <memory>
 #include <vector>
 
@@ -12,14 +14,14 @@ namespace gui {
 
 class Container : public sf::Drawable {
   public:
-    Container() = default;
+    explicit Container( std::unique_ptr<ContainerState>&& state ) : state_( std::move( state ) ) {}
 
     void
-    HandleEvents()
+    HandleEvents( const sf::Event& event )
     {
         for ( auto& widget : widgets_ )
         {
-            widget->HandleEvents( *state_ );
+            widget->HandleEvents( event );
         }
     }
 
@@ -36,12 +38,6 @@ class Container : public sf::Drawable {
     AddWidget( std::unique_ptr<Widget> widget )
     {
         widgets_.push_back( std::move( widget ) );
-    }
-
-    void
-    SetState( std::unique_ptr<ContainerState>&& state )
-    {
-        state_ = std::move( state );
     }
 
   private:

@@ -1,9 +1,11 @@
 #pragma once
 
 #include "gui/container_state.hpp"
+#include "gui/draggable.hpp"
 #include "gui/widget.hpp"
 #include "reactor/reactor.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Window/Event.hpp>
 #include <iomanip>
 #include <ios>
 #include <iostream>
@@ -15,9 +17,9 @@
 
 namespace reactor {
 
-class ReactorGraph : public gui::Widget {
+class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
   public:
-    ReactorGraph( sf::Vector2f pos, sf::Vector2f size, const char* name )
+    Graph( sf::Vector2f pos, sf::Vector2f size, const char* name )
         : gui::Widget( pos, size ), data_bounds_{ 0, 1, 0, 1 }
     {
         title_ = name;
@@ -49,15 +51,10 @@ class ReactorGraph : public gui::Widget {
     }
 
     virtual void
-    HandleEvents( gui::ContainerState& state ) override {};
-
-    virtual void
-    Update( gui::ContainerState& state ) override
+    HandleEvents( const sf::Event& event ) override
     {
-        ReactorState& reactor_state = dynamic_cast<ReactorState&>( state );
-
-        AddPoint( reactor_state.elapsed_time, reactor_state.n_molecules );
-    }
+        HandleDragEvent( event );
+    };
 
   private:
     virtual void
@@ -240,6 +237,34 @@ class ReactorGraph : public gui::Widget {
 
     mutable sf::VertexArray   plot_;
     std::vector<sf::Vector2f> raw_points_;
+};
+
+class EnergyGraph : public Graph {
+  public:
+    EnergyGraph( sf::Vector2f pos, sf::Vector2f size, const char* name )
+        : Graph( pos, size, name ) {};
+
+    virtual void
+    Update( gui::ContainerState& state ) override
+    {
+        ReactorState& reactor_state = dynamic_cast<ReactorState&>( state );
+
+        AddPoint( reactor_state.elapsed_time, reactor_state.full_energy );
+    }
+};
+
+class NumberGraph : public Graph {
+  public:
+    NumberGraph( sf::Vector2f pos, sf::Vector2f size, const char* name )
+        : Graph( pos, size, name ) {};
+
+    virtual void
+    Update( gui::ContainerState& state ) override
+    {
+        ReactorState& reactor_state = dynamic_cast<ReactorState&>( state );
+
+        AddPoint( reactor_state.elapsed_time, reactor_state.n_molecules );
+    }
 };
 
 } // namespace reactor

@@ -26,7 +26,13 @@ class Config {
     static inline const sf::Color      AxisColor            = sf::Color::White;
     static inline const sf::Color      PlotColor            = sf::Color::Red;
     static inline const sf::Color      TextColor            = sf::Color::White;
-    static inline const sf::Color      ButtonColor          = sf::Color::Black;
+    static inline const sf::Vector2f   ButtonPos            = { 0.0f, 0.0f };
+    static inline const sf::Vector2f   ButtonSize           = { 100.0f, 100.0f };
+    static inline const sf::Color      ButtonColor          = sf::Color::Red;
+    static inline const sf::Color      ButtonPressedColor   = sf::Color::Green;
+    static inline const sf::Color      ButtonHoverColor     = sf::Color::Blue;
+    static constexpr int               ButtonFontSize       = 10;
+    static inline const sf::Color      ButtonTextColor      = sf::Color::White;
     static constexpr int               GridDivs             = 10;
     static constexpr const char* const FontName             = "assets/JetBrainsMono-Regular.ttf";
     static constexpr uint              TitleFontSize        = 16;
@@ -44,6 +50,7 @@ class Config {
     static inline const sf::Color      SquareMoleculeColor  = sf::Color::Green;
     static constexpr float             SpeedVelocity        = 3000;
     static constexpr float             SpeedVelocitySq      = SpeedVelocity * SpeedVelocity;
+    static constexpr float             StartVelocityMax     = 1000;
 };
 
 } // namespace application
