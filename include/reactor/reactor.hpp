@@ -50,23 +50,13 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         border_.setOutlineThickness( 2.0f );
     }
 
-  private:
-    virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
-    {
-        target.draw( border_ );
-
-        for ( const auto& molecule : molecules_ )
-        {
-            target.draw( *molecule.ptr );
-        }
-    }
-
   public:
     virtual void
     Update( gui::ContainerState& container_state ) override
     {
         ReactorState& reactor_state = dynamic_cast<ReactorState&>( container_state );
+
+        UpdateBorder();
 
         Clear();
         HandleMoleculesCollisions();
@@ -85,17 +75,70 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
     {
         HandleDragEvent( event );
 
-        int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
-        int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
+        //         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
+        //         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
+        //
+        //         MovePiston( ( right - left ) * 10 );
+        //
+        //         bool add = sf::Keyboard::isKeyPressed( sf::Keyboard::A );
+        //
+        //         if ( add )
+        //         {
+        //             AddCircleMolecule( application::Config::CircleMoleculeRadius, 100, 10, 0, 10
+        //             );
+        //         }
+    }
 
-        MovePiston( ( right - left ) * 10 );
+    size_t
+    GetMoleculesCount() const
+    {
+        return molecules_.size();
+    }
 
-        bool add = sf::Keyboard::isKeyPressed( sf::Keyboard::A );
+    float
+    CalcSumEnergy() const
+    {
+        float energy = 0;
 
-        if ( add )
+        for ( const auto& molecule : molecules_ )
         {
-            AddCircleMolecule( application::Config::CircleMoleculeRadius, 100, 10, 0, 10 );
+            energy += molecule.ptr->GetFullEnergy();
         }
+
+        return energy;
+    }
+
+    void
+    RemoveMolecule()
+    {
+        if ( molecules_.size() > 0 )
+        {
+            molecules_.pop_back();
+        }
+    }
+
+    void
+    AddRandomCircleMolecule()
+    {
+        AddCircleMolecule( application::Config::CircleMoleculeRadius,
+                           application::Config::ReactorSize.x * rand() / RAND_MAX,
+                           application::Config::ReactorSize.y * rand() / RAND_MAX,
+                           application::Config::StartVelocityMax * rand() / RAND_MAX,
+                           application::Config::StartVelocityMax * rand() / RAND_MAX );
+    }
+
+    void
+    AddCircleMolecule( float r, float x, float y, float vx, float vy )
+    {
+        molecules_.emplace_back( std::make_unique<CircleMolecule>(
+            CircleMolecule( r, x, y, vx, vy, application::Config::CircleMoleculeWeight ) ) );
+    }
+
+    void
+    AddSquareMolecule( float r, float x, float y, float vx, float vy )
+    {
+        molecules_.emplace_back( std::make_unique<SquareMolecule>(
+            SquareMolecule( r, x, y, vx, vy, application::Config::SquareMoleculeWeight ) ) );
     }
 
     void
@@ -109,6 +152,24 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
             size_.x += dist;
             border_.setSize( size_ );
         }
+    }
+
+  private:
+    virtual void
+    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    {
+        target.draw( border_ );
+
+        for ( const auto& molecule : molecules_ )
+        {
+            target.draw( *molecule.ptr );
+        }
+    }
+
+    void
+    UpdateBorder()
+    {
+        border_.setPosition( pos_ );
     }
 
     void
@@ -176,39 +237,6 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
                 }
             }
         }
-    }
-
-    size_t
-    GetMoleculesCount() const
-    {
-        return molecules_.size();
-    }
-
-    float
-    CalcSumEnergy() const
-    {
-        float energy = 0;
-
-        for ( const auto& molecule : molecules_ )
-        {
-            energy += molecule.ptr->GetFullEnergy();
-        }
-
-        return energy;
-    }
-
-    void
-    AddCircleMolecule( float r, float x, float y, float vx, float vy )
-    {
-        molecules_.emplace_back( std::make_unique<CircleMolecule>(
-            CircleMolecule( r, x, y, vx, vy, application::Config::CircleMoleculeWeight ) ) );
-    }
-
-    void
-    AddSquareMolecule( float r, float x, float y, float vx, float vy )
-    {
-        molecules_.emplace_back( std::make_unique<SquareMolecule>(
-            SquareMolecule( r, x, y, vx, vy, application::Config::SquareMoleculeWeight ) ) );
     }
 
     void
@@ -282,10 +310,10 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         for ( auto& mol : molecules_ )
         {
             mol.ptr->Move( delta_time );
+            mol.ptr->SetOrigin( pos_ );
         }
     }
 
-  private:
     static float
     GetRandomAngle()
     {

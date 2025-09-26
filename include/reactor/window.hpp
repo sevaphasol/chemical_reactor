@@ -36,17 +36,30 @@ class ReactorWindow : public gui::WindowManager {
                                                              "Energy" ) );
 
         container->AddWidget( std::make_unique<gui::Button>(
-            application::Config::ButtonPos,
+            application::Config::AddMolButtonPos,
             application::Config::ButtonSize,
-            "TestButton",
+            "Add Molecule",
+            [reactor_ptr]() { reactor_ptr->AddRandomCircleMolecule(); } ) );
+
+        container->AddWidget(
+            std::make_unique<gui::Button>( application::Config::RemoveMolButtonPos,
+                                           application::Config::ButtonSize,
+                                           "Remove Molecule",
+                                           [reactor_ptr]() { reactor_ptr->RemoveMolecule(); } ) );
+
+        container->AddWidget( std::make_unique<gui::Button>(
+            application::Config::MovePistonRightButtonPos,
+            application::Config::ButtonSize,
+            "Move Pistol Left",
             [reactor_ptr]() {
-                reactor_ptr->AddCircleMolecule(
-                    application::Config::CircleMoleculeRadius,
-                    application::Config::ReactorSize.x * rand() / RAND_MAX,
-                    application::Config::ReactorSize.y * rand() / RAND_MAX,
-                    application::Config::StartVelocityMax * rand() / RAND_MAX,
-                    application::Config::StartVelocityMax * rand() / RAND_MAX );
+                reactor_ptr->MovePiston( -application::Config::MovePistonDist );
             } ) );
+
+        container->AddWidget( std::make_unique<gui::Button>(
+            application::Config::MovePistonLeftButtonPos,
+            application::Config::ButtonSize,
+            "Move Pistol Right",
+            [reactor_ptr]() { reactor_ptr->MovePiston( application::Config::MovePistonDist ); } ) );
 
         containers_.push_back( std::move( container ) );
     }

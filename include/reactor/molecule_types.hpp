@@ -21,19 +21,19 @@ class CircleMolecule : public Molecule {
     void
     UpdateShapePosition() override
     {
-        shape_.setPosition( x_, y_ );
+        shape_.setPosition( origin_x_ + x_, origin_y_ + y_ );
     }
 
     void
     SetShapeX( double x ) override
     {
-        shape_.setPosition( x, y_ );
+        shape_.setPosition( origin_x_ + x, y_ );
     }
 
     void
     SetShapeY( double y ) override
     {
-        shape_.setPosition( x_, y );
+        shape_.setPosition( x_, origin_y_ + y );
     }
 
     Type
@@ -65,19 +65,19 @@ class SquareMolecule : public Molecule {
     void
     UpdateShapePosition() override
     {
-        shape_.setPosition( x_, y_ );
+        shape_.setPosition( origin_x_ + x_, origin_y_ + y_ );
     }
 
     void
     SetShapeX( double x ) override
     {
-        shape_.setPosition( x, y_ );
+        shape_.setPosition( origin_x_ + x, y_ );
     }
 
     void
     SetShapeY( double y ) override
     {
-        shape_.setPosition( x_, y );
+        shape_.setPosition( x_, origin_y_ + y );
     }
 
     Type

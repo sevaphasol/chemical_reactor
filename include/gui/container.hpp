@@ -9,6 +9,7 @@
 #include <SFML/Window/Event.hpp>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 namespace gui {
 
@@ -35,7 +36,7 @@ class Container : public sf::Drawable {
     }
 
     void
-    AddWidget( std::unique_ptr<Widget> widget )
+    AddWidget( std::unique_ptr<Widget>&& widget )
     {
         widgets_.push_back( std::move( widget ) );
     }

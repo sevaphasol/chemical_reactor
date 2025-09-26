@@ -1,21 +1,26 @@
 #pragma once
 
+#include "gui/draggable.hpp"
 #include "gui/widget.hpp"
 #include "gui/container_state.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <SFML/Window/Mouse.hpp>
 #include <functional>
 #include <string>
 #include <config.hpp>
 
 namespace gui {
 
-class Button : public Widget {
+class Button : public Widget, public gui::Draggable<Button> {
   public:
     using FunctorType = std::function<void()>;
 
-    Button( sf::Vector2f pos, sf::Vector2f size, const std::string& text, FunctorType functor )
+    explicit Button( sf::Vector2f       pos,
+                     sf::Vector2f       size,
+                     const std::string& text,
+                     FunctorType        functor )
         : Widget( pos, size ), functor_( functor ), pressed_( false ), hover_( false )
     {
         font_.loadFromFile( application::Config::FontName );
@@ -28,16 +33,19 @@ class Button : public Widget {
         text_.setString( text );
         text_.setCharacterSize( application::Config::ButtonFontSize );
         text_.setFillColor( application::Config::ButtonTextColor );
-        UpdateTextPosition();
     }
 
     void
     HandleEvents( const sf::Event& event ) override
     {
-        bool         mouse_pressed = ( event.type == sf::Event::MouseButtonPressed );
-        sf::Vector2i mouse_pos     = ( event.type == sf::Event::MouseMoved )
-                                         ? sf::Vector2i( event.mouseMove.x, event.mouseMove.y )
-                                         : sf::Vector2i( event.mouseButton.x, event.mouseButton.y );
+        HandleDragEvent( event );
+
+        bool mouse_pressed = ( event.type == sf::Event::MouseButtonPressed &&
+                               event.mouseButton.button == sf::Mouse::Left );
+
+        sf::Vector2i mouse_pos = ( event.type == sf::Event::MouseMoved )
+                                     ? sf::Vector2i( event.mouseMove.x, event.mouseMove.y )
+                                     : sf::Vector2i( event.mouseButton.x, event.mouseButton.y );
 
         bool is_hover = IsMouseOver( mouse_pos );
 
@@ -66,6 +74,9 @@ class Button : public Widget {
     void
     Update( ContainerState& container_state ) override
     {
+        UpdateRectPosition();
+        UpdateTextPosition();
+
         sf::Color button_color;
 
         if ( pressed_ )
@@ -88,6 +99,12 @@ class Button : public Widget {
     {
         target.draw( rect_, states );
         target.draw( text_, states );
+    }
+
+    void
+    UpdateRectPosition()
+    {
+        rect_.setPosition( pos_ );
     }
 
     void

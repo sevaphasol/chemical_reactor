@@ -3,6 +3,7 @@
 #include <SFML/Graphics/CircleShape.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
+#include <SFML/System/Vector2.hpp>
 
 namespace reactor {
 
@@ -161,6 +162,13 @@ class Molecule : public sf::Drawable {
         return distance_sq < critical_distance * critical_distance;
     }
 
+    void
+    SetOrigin( sf::Vector2f origin )
+    {
+        origin_x_ = origin.x;
+        origin_y_ = origin.y;
+    }
+
   private:
     virtual void
     UpdateShapePosition() = 0;
@@ -172,6 +180,9 @@ class Molecule : public sf::Drawable {
     SetShapeY( double y ) = 0;
 
   protected:
+    double origin_x_;
+    double origin_y_;
+
     double weight_;
 
     double r_;

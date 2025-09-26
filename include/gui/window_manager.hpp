@@ -12,7 +12,7 @@ namespace gui {
 
 class WindowManager {
   public:
-    WindowManager()
+    explicit WindowManager()
         : window_( application::Config::WindowVideoMode,
                    application::Config::Title,
                    application::Config::WindowStyle )

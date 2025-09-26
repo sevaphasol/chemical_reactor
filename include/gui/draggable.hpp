@@ -1,6 +1,5 @@
 #pragma once
 
-#include "gui/widget.hpp"
 #include <SFML/Window/Event.hpp>
 
 namespace gui {
@@ -11,22 +10,41 @@ class Draggable {
     void
     HandleDragEvent( const sf::Event& event )
     {
-        if ( event.type == sf::Event::MouseButtonPressed )
+        switch ( event.type )
         {
-            if ( event.mouseButton.button == sf::Mouse::Left )
+            case sf::Event::MouseButtonPressed:
+                HandleMousePress( event );
+                break;
+            case sf::Event::MouseMoved:
+                HandleMouseMove( event );
+                break;
+            case sf::Event::MouseButtonReleased:
+                is_dragging_ = false;
+                break;
+            default:
+                return;
+        }
+    }
+
+    void
+    HandleMousePress( const sf::Event& event )
+    {
+        if ( event.mouseButton.button == sf::Mouse::Right )
+        {
+            sf::Vector2f mouse_pos( static_cast<float>( event.mouseButton.x ),
+                                    static_cast<float>( event.mouseButton.y ) );
+            if ( self().PointInside( mouse_pos ) )
             {
-                sf::Vector2f mouse_pos( static_cast<float>( event.mouseButton.x ),
-                                        static_cast<float>( event.mouseButton.y ) );
-                if ( self().PointInside( mouse_pos ) )
-                {
-                    is_dragging_ = true;
-                    drag_offset_ = mouse_pos - self().GetPos();
-                }
+                is_dragging_ = true;
+                drag_offset_ = mouse_pos - self().GetPos();
             }
-        } else if ( event.type == sf::Event::MouseButtonReleased )
-        {
-            is_dragging_ = false;
-        } else if ( event.type == sf::Event::MouseMoved && is_dragging_ )
+        }
+    }
+
+    void
+    HandleMouseMove( const sf::Event& event )
+    {
+        if ( is_dragging_ )
         {
             sf::Vector2f mouse_pos( static_cast<float>( event.mouseMove.x ),
                                     static_cast<float>( event.mouseMove.y ) );
