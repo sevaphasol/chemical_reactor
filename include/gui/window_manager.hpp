@@ -15,7 +15,8 @@ class WindowManager {
     explicit WindowManager()
         : window_( application::Config::WindowVideoMode,
                    application::Config::Title,
-                   application::Config::WindowStyle )
+                   application::Config::WindowStyle ),
+          desktop_( 0, 0, application::Config::WindowWidth, application::Config::WindowHeight )
     {
         window_.setFramerateLimit( 60 );
     }
@@ -46,37 +47,26 @@ class WindowManager {
                 window_.close();
             }
 
-            for ( auto& container : containers_ )
-            {
-                container->HandleEvents( event );
-            }
+            desktop_.HandleEvents( event );
         }
     }
 
     void
     Update()
     {
-        for ( auto& container : containers_ )
-        {
-            container->Update();
-        }
+        desktop_.Update();
     }
 
     void
     Draw()
     {
         window_.clear();
-
-        for ( const auto& container : containers_ )
-        {
-            window_.draw( *container );
-        }
-
+        window_.draw( desktop_ );
         window_.display();
     }
 
   protected:
-    std::vector<std::unique_ptr<Container>> containers_;
+    Widget desktop_;
 
   private:
     sf::RenderWindow window_;

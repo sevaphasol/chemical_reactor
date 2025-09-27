@@ -33,7 +33,7 @@ struct ReactorState : public gui::ContainerState
     float n_molecules;
 };
 
-class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
+class Reactor : public gui::Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
@@ -48,32 +48,33 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         border_.setFillColor( sf::Color::Transparent );
         border_.setOutlineColor( sf::Color::Red );
         border_.setOutlineThickness( 2.0f );
+
+        AddChild( std::make_unique<ReactorGraphs>( application::Config::NumberPlotPos,
+                                                   application::Config::NumberPlotSize,
+                                                   "Number" ) );
+
+        AddChild( std::make_unique<ReactorButtons>( application::Config::AddMolButtonPos,
+                                                    application::Config::ButtonSize,
+                                                    "Add Molecule" ) );
     }
 
   public:
     virtual void
-    Update( gui::ContainerState& container_state ) override
+    Update() override
     {
-        ReactorState& reactor_state = dynamic_cast<ReactorState&>( container_state );
-
         UpdateBorder();
 
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
-        PostRendering( reactor_state.delta_time );
+        PostRendering();
         HandleWallCollisions();
-
-        reactor_state.elapsed_time += application::Config::DeltaTime;
-        reactor_state.delta_time  = application::Config::DeltaTime;
-        reactor_state.full_energy = CalcSumEnergy();
-        reactor_state.n_molecules = molecules_.size();
     }
 
     virtual void
     HandleEvents( const sf::Event& event ) override
     {
-        HandleDragEvent( event );
+        // HandleDragEvent( event );
 
         //         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
         //         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );

@@ -19,49 +19,36 @@ class ReactorWindow : public gui::WindowManager {
   public:
     ReactorWindow()
     {
-        auto container =
-            std::make_unique<gui::Container>( std::make_unique<reactor::ReactorState>() );
+        desktop_.AddChild( std::make_unique<Reactor>( application::Config::ReactorPos,
+                                                      application::Config::ReactorSize ) );
 
-        auto reactor = std::make_unique<Reactor>( application::Config::ReactorPos,
-                                                  application::Config::ReactorSize );
+        desktop_.AddChild( std::make_unique<EnergyGraph>( application::Config::NumberPlotPos,
+                                                          application::Config::NumberPlotSize,
+                                                          "Number" ) );
+        desktop_.AddChild( std::make_unique<NumberGraph>( application::Config::EnergyPlotPos,
+                                                          application::Config::EnergyPlotSize,
+                                                          "Energy" ) );
 
-        auto* reactor_ptr = reactor.get();
-
-        container->AddWidget( std::move( reactor ) );
-        container->AddWidget( std::make_unique<EnergyGraph>( application::Config::NumberPlotPos,
-                                                             application::Config::NumberPlotSize,
-                                                             "Number" ) );
-        container->AddWidget( std::make_unique<NumberGraph>( application::Config::EnergyPlotPos,
-                                                             application::Config::EnergyPlotSize,
-                                                             "Energy" ) );
-
-        container->AddWidget( std::make_unique<gui::Button>(
+        desktop_.AddChild( std::make_unique<gui::Button>(
             application::Config::AddMolButtonPos,
             application::Config::ButtonSize,
             "Add Molecule",
-            [reactor_ptr]() { reactor_ptr->AddRandomCircleMolecule(); } ) );
-
-        container->AddWidget(
-            std::make_unique<gui::Button>( application::Config::RemoveMolButtonPos,
-                                           application::Config::ButtonSize,
-                                           "Remove Molecule",
-                                           [reactor_ptr]() { reactor_ptr->RemoveMolecule(); } ) );
-
-        container->AddWidget( std::make_unique<gui::Button>(
-            application::Config::MovePistonRightButtonPos,
+            []() { std::cerr << "Pressed 'Add Molecule' button" << std::endl; } ) );
+        desktop_.AddChild( std::make_unique<gui::Button>(
+            application::Config::RemoveMolButtonPos,
             application::Config::ButtonSize,
-            "Move Pistol Left",
-            [reactor_ptr]() {
-                reactor_ptr->MovePiston( -application::Config::MovePistonDist );
-            } ) );
-
-        container->AddWidget( std::make_unique<gui::Button>(
+            "Remove Molecule",
+            []() { std::cerr << "Pressed 'Remove Molecule' button" << std::endl; } ) );
+        desktop_.AddChild( std::make_unique<gui::Button>(
             application::Config::MovePistonLeftButtonPos,
             application::Config::ButtonSize,
+            "Move Pistol Left",
+            []() { std::cerr << "Pressed 'Move Pistol Left' button" << std::endl; } ) );
+        desktop_.AddChild( std::make_unique<gui::Button>(
+            application::Config::MovePistonRightButtonPos,
+            application::Config::ButtonSize,
             "Move Pistol Right",
-            [reactor_ptr]() { reactor_ptr->MovePiston( application::Config::MovePistonDist ); } ) );
-
-        containers_.push_back( std::move( container ) );
+            []() { std::cerr << "Pressed 'Move Pistol Right' button" << std::endl; } ) );
     }
 };
 
