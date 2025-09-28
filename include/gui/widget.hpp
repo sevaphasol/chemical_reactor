@@ -9,6 +9,7 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <memory>
+#include <optional>
 #include <vector>
 
 namespace gui {
@@ -21,26 +22,17 @@ class Widget : public sf::Drawable {
     virtual void
     HandleEvents( const sf::Event& event )
     {
-        ChildrenHandleEvent( event );
+        HandleEventChildren( event );
     }
 
     virtual void
     Update()
     {
-        ChildrenUpdate();
-    }
-
-    virtual void
-    ChildrenUpdate()
-    {
-        for ( auto& child : childern_ )
-        {
-            child->Update();
-        }
+        UpdateChildren();
     }
 
     void
-    ChildrenHandleEvent( const sf::Event& event )
+    HandleEventChildren( const sf::Event& event )
     {
         for ( auto& child : childern_ )
         {
@@ -48,10 +40,25 @@ class Widget : public sf::Drawable {
         }
     }
 
+    virtual void
+    UpdateChildren()
+    {
+        for ( auto& child : childern_ )
+        {
+            child->Update();
+        }
+    }
+
+    virtual void
+    HandleEventsSelf() {};
+
+    virtual void
+    UpdateSelf() {};
+
     sf::Vector2f
     GetAbsolutePos() const
     {
-        return pos_ + parent_->GetAbsolutePos();
+        return ( parent_ != nullptr ) ? pos_ + parent_->GetAbsolutePos() : pos_;
     }
 
     sf::Vector2f
@@ -96,16 +103,21 @@ class Widget : public sf::Drawable {
     virtual void
     draw( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
-        static sf::RectangleShape Rect;
-        Rect.setSize( size_ );
-        Rect.setPosition( pos_ );
-
-        target.draw( Rect, states );
-
+        DrawSelf( target, states );
         DrawChildren( target, states );
     }
 
-    void
+    virtual void
+    DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const
+    {
+        static sf::RectangleShape Rect;
+        Rect.setSize( size_ );
+        Rect.setPosition( GetAbsolutePos() );
+
+        target.draw( Rect, states );
+    }
+
+    virtual void
     DrawChildren( sf::RenderTarget& target, sf::RenderStates states ) const
     {
         for ( const auto& child : childern_ )

@@ -2,7 +2,6 @@
 
 #include "gui/draggable.hpp"
 #include "gui/widget.hpp"
-#include "gui/container_state.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
@@ -23,16 +22,16 @@ class Button : public Widget, public gui::Draggable<Button> {
                      FunctorType        functor )
         : Widget( pos, size ), functor_( functor ), pressed_( false ), hover_( false )
     {
-        font_.loadFromFile( application::Config::FontName );
+        font_.loadFromFile( config::Reactor::Buttons::Common::Font::Name );
 
         rect_.setPosition( pos_ );
         rect_.setSize( size_ );
-        rect_.setFillColor( application::Config::ButtonColor );
+        rect_.setFillColor( config::Reactor::Buttons::Common::Parameters::Color::Default );
 
         text_.setFont( font_ );
         text_.setString( text );
-        text_.setCharacterSize( application::Config::ButtonFontSize );
-        text_.setFillColor( application::Config::ButtonTextColor );
+        text_.setCharacterSize( config::Reactor::Buttons::Common::Font::Size );
+        text_.setFillColor( config::Reactor::Buttons::Common::Font::Color );
     }
 
     void
@@ -72,7 +71,7 @@ class Button : public Widget, public gui::Draggable<Button> {
     }
 
     void
-    Update( ContainerState& container_state ) override
+    Update() override
     {
         UpdateRectPosition();
         UpdateTextPosition();
@@ -81,13 +80,13 @@ class Button : public Widget, public gui::Draggable<Button> {
 
         if ( pressed_ )
         {
-            button_color = application::Config::ButtonPressedColor;
+            button_color = config::Reactor::Buttons::Common::Parameters::Color::Pressed;
         } else if ( hover_ )
         {
-            button_color = application::Config::ButtonHoverColor;
+            button_color = config::Reactor::Buttons::Common::Parameters::Color::Hover;
         } else
         {
-            button_color = application::Config::ButtonColor;
+            button_color = config::Reactor::Buttons::Common::Parameters::Color::Default;
         }
 
         rect_.setFillColor( button_color );

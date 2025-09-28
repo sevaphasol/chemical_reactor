@@ -23,16 +23,16 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     Graph( sf::Vector2f pos, sf::Vector2f size, const std::string& title )
         : gui::Widget( pos, size ), title_( title ), min_bounds_( 0, 0 ), max_bounds_( 1, 1 )
     {
-        font_.loadFromFile( application::Config::FontName );
+        font_.loadFromFile( config::Reactor::Graphs::Common::Font::Name );
 
         title_text_.setFont( font_ );
         title_text_.setString( title_ );
-        title_text_.setCharacterSize( application::Config::TitleFontSize );
-        title_text_.setFillColor( application::Config::TextColor );
+        title_text_.setCharacterSize( config::Reactor::Graphs::Common::Font::Title::Size );
+        title_text_.setFillColor( config::Reactor::Graphs::Common::Font::Color );
 
         axis_labels_text_.setFont( font_ );
-        axis_labels_text_.setCharacterSize( application::Config::LabelsFontSize );
-        axis_labels_text_.setFillColor( application::Config::TextColor );
+        axis_labels_text_.setCharacterSize( config::Reactor::Graphs::Common::Font::Labels::Size );
+        axis_labels_text_.setFillColor( config::Reactor::Graphs::Common::Font::Color );
 
         RecalculateSteps();
     }
@@ -99,16 +99,17 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     DrawGridLines( sf::RenderTarget& target, bool horizontal ) const
     {
         sf::Vertex line[2];
-        line[0].color = application::Config::GridColor;
-        line[1].color = application::Config::GridColor;
+        line[0].color = config::Reactor::Graphs::Common::Parameters::Color::Grid;
+        line[1].color = config::Reactor::Graphs::Common::Parameters::Color::Grid;
 
         double min_val = horizontal ? min_bounds_.y : min_bounds_.x;
         double max_val = horizontal ? max_bounds_.y : max_bounds_.x;
         double range   = max_val - min_val;
 
-        for ( int i = 0; i <= application::Config::GridDivs; i++ )
+        for ( int i = 0; i <= config::Reactor::Graphs::Common::Parameters::GridDivs; i++ )
         {
-            double logical_val  = min_val + i * range / application::Config::GridDivs;
+            double logical_val =
+                min_val + i * range / config::Reactor::Graphs::Common::Parameters::GridDivs;
             double screen_coord = 0;
 
             if ( horizontal )
@@ -142,21 +143,29 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
         double max_val = x_axis ? max_bounds_.x : max_bounds_.y;
         double range   = max_val - min_val;
 
-        for ( int i = 0; i <= application::Config::GridDivs; i++ )
+        for ( int i = 0; i <= config::Reactor::Graphs::Common::Parameters::GridDivs; i++ )
         {
-            double logical_val = min_val + i * range / application::Config::GridDivs;
+            double logical_val =
+                min_val + i * range / config::Reactor::Graphs::Common::Parameters::GridDivs;
 
             double screen_x = 0;
             double screen_y = 0;
             if ( x_axis )
             {
-                screen_x = LogicalToScreenX( logical_val ) - application::Config::HorLabelsXPadding;
-                screen_y = LogicalToScreenY( 0.0f ) - application::Config::HorLabelsYPadding;
+                screen_x = LogicalToScreenX( logical_val ) -
+                           config::Reactor::Graphs::Common::Parameters::Parameters::Labels::
+                               Padding::Horizontal::X;
+                screen_y = LogicalToScreenY( 0.0f ) -
+                           config::Reactor::Graphs::Common::Parameters::Parameters::Labels::
+                               Padding::Horizontal::Y;
 
             } else
             {
-                screen_x = LogicalToScreenX( 0.0f ) - application::Config::VerLabelsXPadding;
-                screen_y = LogicalToScreenY( logical_val ) - application::Config::VerLabelsYPadding;
+                screen_x = LogicalToScreenX( 0.0f ) - config::Reactor::Graphs::Common::Parameters::
+                                                          Parameters::Labels::Padding::Vertical::X;
+                screen_y = LogicalToScreenY( logical_val ) -
+                           config::Reactor::Graphs::Common::Parameters::Parameters::Labels::
+                               Padding::Vertical::Y;
             }
 
             std::ostringstream oss;
@@ -170,9 +179,9 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     void
     UpdateTitle()
     {
-        title_text_.setPosition( pos_.x + size_.x / 2.0f -
-                                     title_text_.getGlobalBounds().width / 2.0f,
-                                 pos_.y - application::Config::TitleYPadding );
+        title_text_.setPosition(
+            pos_.x + size_.x / 2.0f - title_text_.getGlobalBounds().width / 2.0f,
+            pos_.y - config::Reactor::Graphs::Common::Parameters::Title::Padding::Y );
     }
 
     void
@@ -199,7 +208,7 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
             double screen_y = LogicalToScreenY( raw_points_[i].y );
 
             plot_[i].position = sf::Vector2f( screen_x, screen_y );
-            plot_[i].color    = application::Config::PlotColor;
+            plot_[i].color    = config::Reactor::Graphs::Common::Parameters::Color::Plot;
         }
     }
 

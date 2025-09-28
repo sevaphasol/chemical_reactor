@@ -20,16 +20,15 @@ struct Common
 
 struct Reactor
 {
-    static inline const sf::Vector2f ReactorPos  = { 10.0f, 10.0f };
-    static inline const sf::Vector2f ReactorSize = { 600.0f, 400.0f };
+    static inline const sf::Vector2f Position = { 10.0f, 10.0f };
+    static inline const sf::Vector2f Size     = { 600.0f, 400.0f };
 
     struct Window
     {
-        static constexpr uint              WindowWidth     = 1200.0f;
-        static constexpr uint              WindowHeight    = 800.0f;
-        static inline const sf::VideoMode  WindowVideoMode = { WindowWidth, WindowHeight };
-        static constexpr const char* const Title           = "SphereRendering";
-        static inline const sf::Uint32     WindowStyle     = sf::Style::Close;
+        static constexpr uint              Width  = 1200.0f;
+        static constexpr uint              Height = 800.0f;
+        static constexpr const char* const Title  = "SphereRendering";
+        static inline const sf::Uint32     Style  = sf::Style::Close;
     };
 
     struct Buttons

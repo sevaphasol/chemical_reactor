@@ -1,22 +1,20 @@
 #pragma once
 
-#include "config.hpp"
 #include "gui/container.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/Window.hpp>
 #include <reactor/molecule.hpp>
 #include <reactor/reactor.hpp>
 #include <reactor/graph.hpp>
-#include <memory>
 
 namespace gui {
 
 class WindowManager {
   public:
-    explicit WindowManager()
-        : window_( application::Config::WindowVideoMode,
-                   application::Config::Title,
-                   application::Config::WindowStyle ),
-          desktop_( 0, 0, application::Config::WindowWidth, application::Config::WindowHeight )
+    explicit WindowManager( float w, float h, const std::string& title, const sf::Uint32& style )
+        : window_( sf::VideoMode( w, h ), title, style ), desktop_( 0, 0, w, h )
     {
         window_.setFramerateLimit( 60 );
     }
