@@ -7,54 +7,87 @@
 #include <sys/types.h>
 #include <SFML/Graphics.hpp>
 
-namespace application {
+namespace config {
 
-class Config {
-  public:
-    static constexpr uint              WindowWidth              = 1200.0f;
-    static constexpr uint              WindowHeight             = 800.0f;
-    static inline const sf::VideoMode  WindowVideoMode          = { WindowWidth, WindowHeight };
-    static constexpr const char* const Title                    = "SphereRendering";
-    static inline const sf::Uint32     WindowStyle              = sf::Style::Close;
-    static inline const sf::Vector2f   ReactorPos               = { 10.0f, 10.0f };
-    static inline const sf::Vector2f   ReactorSize              = { 600.0f, 400.0f };
-    static inline const sf::Vector2f   NumberPlotPos            = { 800.0f, 50.0f };
-    static inline const sf::Vector2f   NumberPlotSize           = { 300.0f, 300.0f };
-    static inline const sf::Vector2f   EnergyPlotPos            = { 800.0f, 450.0f };
-    static inline const sf::Vector2f   EnergyPlotSize           = { 300.0f, 300.0f };
-    static inline const sf::Color      GridColor                = { 100, 100, 100 };
-    static inline const sf::Color      AxisColor                = sf::Color::White;
-    static inline const sf::Color      PlotColor                = sf::Color::Red;
-    static inline const sf::Color      TextColor                = sf::Color::White;
-    static inline const sf::Vector2f   AddMolButtonPos          = { 125.0f, 500.0f };
-    static inline const sf::Vector2f   RemoveMolButtonPos       = { 325.0f, 500.0f };
-    static inline const sf::Vector2f   MovePistonRightButtonPos = { 125.0f, 600.0f };
-    static inline const sf::Vector2f   MovePistonLeftButtonPos  = { 325.0f, 600.0f };
-    static inline const sf::Vector2f   ButtonSize               = { 170.0f, 70.0f };
-    static inline const sf::Color      ButtonColor              = { 100, 100, 100 };
-    static inline const sf::Color      ButtonPressedColor       = { 200, 100, 100 };
-    static inline const sf::Color      ButtonHoverColor         = { 150, 100, 100 };
-    static constexpr int               ButtonFontSize           = 14;
-    static inline const sf::Color      ButtonTextColor          = sf::Color::White;
-    static constexpr int               GridDivs                 = 10;
-    static constexpr const char* const FontName             = "assets/JetBrainsMono-Regular.ttf";
-    static constexpr uint              TitleFontSize        = 16;
-    static constexpr uint              LabelsFontSize       = 12;
-    static constexpr float             HorLabelsXPadding    = 8.5f;
-    static constexpr float             HorLabelsYPadding    = 10.0f;
-    static constexpr float             VerLabelsXPadding    = 60.0f;
-    static constexpr float             VerLabelsYPadding    = 8.5f;
-    static constexpr float             TitleYPadding        = 30.0f;
-    static constexpr double            DeltaTime            = 0.02f;
-    static constexpr double            CircleMoleculeRadius = 5.0f;
-    static constexpr double            CircleMoleculeWeight = 1.0f;
-    static constexpr double            SquareMoleculeWeight = 2.0f;
-    static inline const sf::Color      CircleMoleculeColor  = sf::Color::Red;
-    static inline const sf::Color      SquareMoleculeColor  = sf::Color::Green;
-    static constexpr float             SpeedVelocity        = 3000;
-    static constexpr float             SpeedVelocitySq      = SpeedVelocity * SpeedVelocity;
-    static constexpr float             StartVelocityMax     = 1000;
-    static constexpr float             MovePistonDist       = 10.0f;
+struct Common
+{
+    struct Font
+    {
+        static constexpr const char* const Name = "assets/JetBrainsMono-Regular.ttf";
+        static constexpr uint              Size = 16;
+    };
 };
 
-} // namespace application
+struct Reactor
+{
+    static inline const sf::Vector2f ReactorPos  = { 10.0f, 10.0f };
+    static inline const sf::Vector2f ReactorSize = { 600.0f, 400.0f };
+
+    struct Window
+    {
+        static constexpr uint              WindowWidth     = 1200.0f;
+        static constexpr uint              WindowHeight    = 800.0f;
+        static inline const sf::VideoMode  WindowVideoMode = { WindowWidth, WindowHeight };
+        static constexpr const char* const Title           = "SphereRendering";
+        static inline const sf::Uint32     WindowStyle     = sf::Style::Close;
+    };
+
+    struct Buttons
+    {
+        static inline const sf::Vector2f Position = { 100.0f, 475.0f };
+        static inline const sf::Vector2f Size     = { 600.0f, 300.0f };
+
+        struct Font
+        {
+            static constexpr const char* const Name = Common::Font::Name;
+            static constexpr uint              Size = 16;
+        }
+
+        static inline const sf::Vector2f AddMolButtonPos          = { 125.0f, 500.0f };
+        static inline const sf::Vector2f RemoveMolButtonPos       = { 325.0f, 500.0f };
+        static inline const sf::Vector2f MovePistonRightButtonPos = { 125.0f, 600.0f };
+        static inline const sf::Vector2f MovePistonLeftButtonPos  = { 325.0f, 600.0f };
+        static inline const sf::Vector2f ButtonSize               = { 170.0f, 70.0f };
+        static inline const sf::Color    ButtonColor              = { 100, 100, 100 };
+        static inline const sf::Color    ButtonPressedColor       = { 200, 100, 100 };
+        static inline const sf::Color    ButtonHoverColor         = { 150, 100, 100 };
+        static constexpr int             ButtonFontSize           = 14;
+        static inline const sf::Color    ButtonTextColor          = sf::Color::White;
+        static constexpr float           MovePistonDist           = 10.0f;
+    };
+    struct Graphs
+    {
+        static constexpr uint              TitleFontSize     = 16;
+        static constexpr uint              LabelsFontSize    = 12;
+        static constexpr const char* const FontName          = "assets/JetBrainsMono-Regular.ttf";
+        static inline const sf::Vector2f   NumberPlotPos     = { 800.0f, 50.0f };
+        static inline const sf::Vector2f   NumberPlotSize    = { 300.0f, 300.0f };
+        static inline const sf::Vector2f   EnergyPlotPos     = { 800.0f, 450.0f };
+        static inline const sf::Vector2f   EnergyPlotSize    = { 300.0f, 300.0f };
+        static constexpr int               GridDivs          = 10;
+        static inline const sf::Color      GridColor         = { 100, 100, 100 };
+        static inline const sf::Color      AxisColor         = sf::Color::White;
+        static inline const sf::Color      PlotColor         = sf::Color::Red;
+        static constexpr float             HorLabelsXPadding = 8.5f;
+        static constexpr float             HorLabelsYPadding = 10.0f;
+        static constexpr float             VerLabelsXPadding = 60.0f;
+        static constexpr float             VerLabelsYPadding = 8.5f;
+        static constexpr float             TitleYPadding     = 30.0f;
+        static inline const sf::Color      TextColor         = sf::Color::White;
+    };
+
+    struct Physics
+    {
+        static constexpr double       DeltaTime            = 0.02f;
+        static constexpr double       CircleMoleculeRadius = 5.0f;
+        static constexpr double       CircleMoleculeWeight = 1.0f;
+        static constexpr double       SquareMoleculeWeight = 2.0f;
+        static inline const sf::Color CircleMoleculeColor  = sf::Color::Red;
+        static inline const sf::Color SquareMoleculeColor  = sf::Color::Green;
+        static constexpr float        SpeedVelocity        = 3000;
+        static constexpr float        SpeedVelocitySq      = SpeedVelocity * SpeedVelocity;
+        static constexpr float        StartVelocityMax     = 1000;
+    };
+};
+
+} // namespace config
