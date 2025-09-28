@@ -13,8 +13,8 @@ struct Common
 {
     struct Font
     {
-        static constexpr const char* const Name = "assets/JetBrainsMono-Regular.ttf";
-        static constexpr uint              Size = 16;
+        static constexpr const char* const Name  = "assets/JetBrainsMono-Regular.ttf";
+        static inline const sf::Color      Color = sf::Color::White;
     };
 };
 
@@ -37,56 +37,161 @@ struct Reactor
         static inline const sf::Vector2f Position = { 100.0f, 475.0f };
         static inline const sf::Vector2f Size     = { 600.0f, 300.0f };
 
-        struct Font
+        struct Common
         {
-            static constexpr const char* const Name = Common::Font::Name;
-            static constexpr uint              Size = 16;
-        }
+            struct Font
+            {
+                static constexpr const char* const Name  = config::Common::Font::Name;
+                static constexpr uint              Size  = 14;
+                static inline const sf::Color      Color = config::Common::Font::Color;
+            };
 
-        static inline const sf::Vector2f AddMolButtonPos          = { 125.0f, 500.0f };
-        static inline const sf::Vector2f RemoveMolButtonPos       = { 325.0f, 500.0f };
-        static inline const sf::Vector2f MovePistonRightButtonPos = { 125.0f, 600.0f };
-        static inline const sf::Vector2f MovePistonLeftButtonPos  = { 325.0f, 600.0f };
-        static inline const sf::Vector2f ButtonSize               = { 170.0f, 70.0f };
-        static inline const sf::Color    ButtonColor              = { 100, 100, 100 };
-        static inline const sf::Color    ButtonPressedColor       = { 200, 100, 100 };
-        static inline const sf::Color    ButtonHoverColor         = { 150, 100, 100 };
-        static constexpr int             ButtonFontSize           = 14;
-        static inline const sf::Color    ButtonTextColor          = sf::Color::White;
-        static constexpr float           MovePistonDist           = 10.0f;
+            struct Parameters
+            {
+                static inline const sf::Vector2f Size = { 170.0f, 70.0f };
+
+                struct Color
+                {
+                    static inline const sf::Color Default = { 100, 100, 100 };
+                    static inline const sf::Color Hover   = { 150, 100, 100 };
+                    static inline const sf::Color Pressed = { 200, 100, 100 };
+                };
+            };
+        };
+
+        struct Specialization
+        {
+            struct AddMolecule
+            {
+                static inline const sf::Vector2f Position = { 25.0f, 25.0f };
+            };
+
+            struct RemoveMolecule
+            {
+                static inline const sf::Vector2f Position = { 225.0f, 25.0f };
+            };
+
+            struct MovePiston
+            {
+                static constexpr float MoveDistance = 10.0f;
+
+                struct Left
+                {
+                    static inline const sf::Vector2f Position = { 25.0f, 125.0f };
+                };
+
+                struct Right
+                {
+                    static inline const sf::Vector2f Position = { 25.0f, 125.0f };
+                };
+            };
+        };
     };
+
     struct Graphs
     {
-        static constexpr uint              TitleFontSize     = 16;
-        static constexpr uint              LabelsFontSize    = 12;
-        static constexpr const char* const FontName          = "assets/JetBrainsMono-Regular.ttf";
-        static inline const sf::Vector2f   NumberPlotPos     = { 800.0f, 50.0f };
-        static inline const sf::Vector2f   NumberPlotSize    = { 300.0f, 300.0f };
-        static inline const sf::Vector2f   EnergyPlotPos     = { 800.0f, 450.0f };
-        static inline const sf::Vector2f   EnergyPlotSize    = { 300.0f, 300.0f };
-        static constexpr int               GridDivs          = 10;
-        static inline const sf::Color      GridColor         = { 100, 100, 100 };
-        static inline const sf::Color      AxisColor         = sf::Color::White;
-        static inline const sf::Color      PlotColor         = sf::Color::Red;
-        static constexpr float             HorLabelsXPadding = 8.5f;
-        static constexpr float             HorLabelsYPadding = 10.0f;
-        static constexpr float             VerLabelsXPadding = 60.0f;
-        static constexpr float             VerLabelsYPadding = 8.5f;
-        static constexpr float             TitleYPadding     = 30.0f;
-        static inline const sf::Color      TextColor         = sf::Color::White;
+        static inline const sf::Vector2f Position = { 750.0f, 0.0f };
+        static inline const sf::Vector2f Size     = { 400.0f, 800.0f };
+
+        struct Common
+        {
+            struct Font
+            {
+                static constexpr const char* const Name  = config::Common::Font::Name;
+                static inline const sf::Color      Color = config::Common::Font::Color;
+
+                struct Title
+                {
+                    static constexpr uint Size = 16;
+                };
+
+                struct Labels
+                {
+                    static constexpr uint Size = 12;
+                };
+            };
+
+            struct Parameters
+            {
+                static inline const sf::Vector2f Size = { 300.0f, 300.0f };
+
+                static constexpr int GridDivs = 10;
+
+                struct Color
+                {
+                    static inline const sf::Color Grid = { 100, 100, 100 };
+                    static inline const sf::Color Axis = sf::Color::White;
+                    static inline const sf::Color Plot = sf::Color::Red;
+                };
+
+                struct Title
+                {
+                    struct Padding
+                    {
+                        static constexpr float Y = 30.0f;
+                    };
+                };
+
+                struct Labels
+                {
+                    struct Padding
+                    {
+                        struct Horizontal
+                        {
+                            static constexpr float X = 8.5f;
+                            static constexpr float Y = 10.0f;
+                        };
+
+                        struct Vertical
+                        {
+                            static constexpr float X = 60.0f;
+                            static constexpr float Y = 8.5f;
+                        };
+                    };
+                };
+            };
+        };
+
+        struct Specialization
+        {
+            struct Number
+            {
+                static inline const sf::Vector2f Position = { 800.0f, 50.0f };
+            };
+
+            struct Energy
+            {
+                static inline const sf::Vector2f Position = { 800.0f, 450.0f };
+            };
+        };
     };
 
     struct Physics
     {
-        static constexpr double       DeltaTime            = 0.02f;
-        static constexpr double       CircleMoleculeRadius = 5.0f;
-        static constexpr double       CircleMoleculeWeight = 1.0f;
-        static constexpr double       SquareMoleculeWeight = 2.0f;
-        static inline const sf::Color CircleMoleculeColor  = sf::Color::Red;
-        static inline const sf::Color SquareMoleculeColor  = sf::Color::Green;
-        static constexpr float        SpeedVelocity        = 3000;
-        static constexpr float        SpeedVelocitySq      = SpeedVelocity * SpeedVelocity;
-        static constexpr float        StartVelocityMax     = 1000;
+        static constexpr double DeltaTime       = 0.02f;
+        static constexpr float  SpeedVelocity   = 3000;
+        static constexpr float  SpeedVelocitySq = SpeedVelocity * SpeedVelocity;
+
+        struct Molecule
+        {
+            static constexpr float StartVelocityMax = 1000;
+
+            struct Circle
+            {
+                static constexpr float Radius = 5.0f;
+                static constexpr float Weight = 1.0f;
+
+                static inline const sf::Color Color = sf::Color::Red;
+            };
+
+            struct Square
+            {
+                static constexpr float Radius = 5.0f;
+                static constexpr float Weight = 2.0f;
+
+                static inline const sf::Color Color = sf::Color::Green;
+            };
+        };
     };
 };
 
