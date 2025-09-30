@@ -3,12 +3,14 @@
 #include "gui/draggable.hpp"
 #include "gui/widget.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RectangleShape.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
-#include <functional>
-#include <string>
 #include <config.hpp>
+#include <functional>
+#include <iomanip>
+#include <string>
 
 namespace gui {
 
@@ -96,6 +98,9 @@ class Button : public Widget, public gui::Draggable<Button> {
     void
     draw( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
+        // sf::RectangleShape rect()
+        states.transform.translate( parent_->GetAbsolutePos() );
+
         target.draw( rect_, states );
         target.draw( text_, states );
     }

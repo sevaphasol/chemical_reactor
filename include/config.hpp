@@ -1,11 +1,11 @@
 #pragma once
 
+#include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/VideoMode.hpp>
 #include <SFML/Window/WindowStyle.hpp>
 #include <sys/types.h>
-#include <SFML/Graphics.hpp>
 
 namespace config {
 
@@ -20,8 +20,9 @@ struct Common
 
 struct Reactor
 {
-    static inline const sf::Vector2f Position = { 10.0f, 10.0f };
-    static inline const sf::Vector2f Size     = { 600.0f, 400.0f };
+    static inline const sf::Vector2f Position        = { 10.0f, 10.0f };
+    static inline const sf::Vector2f Size            = { 600.0f, 400.0f };
+    static inline const sf::Color    BackGroundColor = { 100, 100, 100 };
 
     struct Window
     {
@@ -81,7 +82,7 @@ struct Reactor
 
                 struct Right
                 {
-                    static inline const sf::Vector2f Position = { 25.0f, 125.0f };
+                    static inline const sf::Vector2f Position = { 225.0f, 125.0f };
                 };
             };
         };
@@ -155,12 +156,12 @@ struct Reactor
         {
             struct Number
             {
-                static inline const sf::Vector2f Position = { 800.0f, 50.0f };
+                static inline const sf::Vector2f Position = { 50.0f, 50.0f };
             };
 
             struct Energy
             {
-                static inline const sf::Vector2f Position = { 800.0f, 450.0f };
+                static inline const sf::Vector2f Position = { 50.0f, 450.0f };
             };
         };
     };

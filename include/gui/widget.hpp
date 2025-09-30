@@ -1,5 +1,6 @@
 #pragma once
 
+#include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/Rect.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -16,7 +17,15 @@ namespace gui {
 
 class Widget : public sf::Drawable {
   public:
-    explicit Widget( sf::Vector2f pos, sf::Vector2f size ) : pos_( pos ), size_( size ) {}
+    explicit Widget( const sf::Vector2f& pos, const sf::Vector2f& size )
+        : pos_( pos ), size_( size ), rect_( size ) {};
+
+    explicit Widget( const sf::Vector2f& pos, const sf::Vector2f& size, const sf::Color& color )
+        : Widget( pos, size )
+    {
+        rect_.setFillColor( color );
+    }
+
     explicit Widget( float x, float y, float w, float h ) : pos_( x, y ), size_( w, h ) {};
 
     virtual void
@@ -58,7 +67,13 @@ class Widget : public sf::Drawable {
     sf::Vector2f
     GetAbsolutePos() const
     {
-        return ( parent_ != nullptr ) ? pos_ + parent_->GetAbsolutePos() : pos_;
+        return pos_ + GetParentAbsolutePos();
+    }
+
+    sf::Vector2f
+    GetParentAbsolutePos() const
+    {
+        return ( parent_ != nullptr ) ? parent_->GetAbsolutePos() : sf::Vector2f( 0, 0 );
     }
 
     sf::Vector2f
@@ -110,11 +125,9 @@ class Widget : public sf::Drawable {
     virtual void
     DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const
     {
-        static sf::RectangleShape Rect;
-        Rect.setSize( size_ );
-        Rect.setPosition( GetAbsolutePos() );
+        states.transform.translate( GetParentAbsolutePos() );
 
-        target.draw( Rect, states );
+        target.draw( rect_, states );
     }
 
     virtual void
@@ -127,6 +140,8 @@ class Widget : public sf::Drawable {
     }
 
   protected:
+    sf::RectangleShape rect_;
+
     sf::Vector2f pos_;
     sf::Vector2f size_;
 

@@ -1,11 +1,13 @@
 #pragma once
 
-#include "gui/container_state.hpp"
 #include "config.hpp"
+#include "gui/container_state.hpp"
 #include "gui/draggable.hpp"
+#include "gui/widget.hpp"
 #include "reactor/molecule.hpp"
 #include "reactor/molecule_types.hpp"
-#include "gui/widget.hpp"
+#include "reactor_buttons.hpp"
+#include "reactor_graphs.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -18,8 +20,6 @@
 #include <memory>
 #include <random>
 #include <vector>
-#include "reactor_buttons.hpp"
-#include "reactor_graphs.hpp"
 
 namespace reactor {
 
@@ -27,7 +27,8 @@ class Reactor : public gui::Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
-    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size ) : gui::Widget( pos, size )
+    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size, const sf::Color& background_color )
+        : gui::Widget( pos, size, background_color )
     {
         vtable_[Molecule::CIRCLE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::CIRCLE][Molecule::SQUARE] = &Reactor::CollideCircle;

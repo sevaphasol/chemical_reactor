@@ -4,17 +4,18 @@
 #include "gui/widget.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/Rect.hpp>
+#include <SFML/Graphics/RenderStates.hpp>
 #include <SFML/Graphics/RenderTarget.hpp>
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
+#include <algorithm>
+#include <config.hpp>
 #include <iomanip>
 #include <ios>
 #include <iostream>
-#include <vector>
-#include <algorithm>
-#include <string>
 #include <sstream>
-#include <config.hpp>
+#include <string>
+#include <vector>
 
 namespace gui {
 
@@ -62,8 +63,10 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     virtual void
     draw( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
-        DrawGridLines( target );
-        DrawAxisLabels( target );
+        states.transform.translate( parent_->GetAbsolutePos() );
+
+        DrawGridLines( target, states );
+        DrawAxisLabels( target, states );
         target.draw( plot_, states );
         target.draw( title_text_, states );
     }
@@ -89,14 +92,14 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     }
 
     void
-    DrawGridLines( sf::RenderTarget& target ) const
+    DrawGridLines( sf::RenderTarget& target, sf::RenderStates states ) const
     {
-        DrawGridLines( target, true );
-        DrawGridLines( target, false );
+        DrawGridLines( target, states, true );
+        DrawGridLines( target, states, false );
     }
 
     void
-    DrawGridLines( sf::RenderTarget& target, bool horizontal ) const
+    DrawGridLines( sf::RenderTarget& target, sf::RenderStates states, bool horizontal ) const
     {
         sf::Vertex line[2];
         line[0].color = config::Reactor::Graphs::Common::Parameters::Color::Grid;
@@ -126,18 +129,18 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
                 line[1].position = sf::Vector2f( screen_coord, pos_.y + size_.y );
             }
 
-            target.draw( line, 2, sf::Lines );
+            target.draw( line, 2, sf::Lines, states );
         }
     }
 
     void
-    DrawAxisLabels( sf::RenderTarget& target ) const
+    DrawAxisLabels( sf::RenderTarget& target, sf::RenderStates states ) const
     {
-        DrawLabelsForAxis( target, false );
+        DrawLabelsForAxis( target, states, false );
     }
 
     void
-    DrawLabelsForAxis( sf::RenderTarget& target, bool x_axis ) const
+    DrawLabelsForAxis( sf::RenderTarget& target, sf::RenderStates states, bool x_axis ) const
     {
         double min_val = x_axis ? min_bounds_.x : min_bounds_.y;
         double max_val = x_axis ? max_bounds_.x : max_bounds_.y;
@@ -172,7 +175,7 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
             oss << std::setprecision( 2 ) << std::scientific << logical_val;
             axis_labels_text_.setString( oss.str() );
             axis_labels_text_.setPosition( screen_x, screen_y );
-            target.draw( axis_labels_text_ );
+            target.draw( axis_labels_text_, states );
         }
     }
 
