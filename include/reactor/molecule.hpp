@@ -97,17 +97,17 @@ class Molecule : public sf::Drawable {
         return weight_ * ( vx_ * vx_ + vy_ * vy_ ) / 2;
     }
 
-    double
-    GetPotentialEnergy() const
-    {
-        // return weight_ * Config::SpeedVelocitySq;
-        return 0.0;
-    }
+    // double
+    // GetPotentialEnergy() const
+    // {
+    //     // return weight_ * Config::SpeedVelocitySq;
+    //     return 0.0;
+    // }
 
     double
     GetFullEnergy() const
     {
-        return GetKineticEnergy() + GetPotentialEnergy();
+        return GetKineticEnergy(); //+ GetPotentialEnergy();
     }
 
     double

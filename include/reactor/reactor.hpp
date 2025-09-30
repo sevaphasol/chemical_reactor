@@ -1,11 +1,13 @@
 #pragma once
 
-#include "gui/container_state.hpp"
 #include "config.hpp"
+#include "gui/container_state.hpp"
 #include "gui/draggable.hpp"
+#include "gui/widget.hpp"
 #include "reactor/molecule.hpp"
 #include "reactor/molecule_types.hpp"
-#include "gui/widget.hpp"
+#include "reactor_buttons.hpp"
+#include "reactor_graphs.hpp"
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Graphics/Drawable.hpp>
 #include <SFML/Graphics/RenderStates.hpp>
@@ -15,29 +17,18 @@
 #include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
-#include <iostream>
 #include <memory>
 #include <random>
 #include <vector>
 
 namespace reactor {
 
-struct ReactorState : public gui::ContainerState
-{
-    ReactorState() : elapsed_time( 0 ), full_energy( 0 ), n_molecules( 0 ) {};
-    ~ReactorState() = default;
-
-    float delta_time;
-    float elapsed_time;
-    float full_energy;
-    float n_molecules;
-};
-
-class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
+class Reactor : public gui::Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
-    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size ) : gui::Widget( pos, size )
+    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size, const sf::Color& background_color )
+        : gui::Widget( pos, size, background_color )
     {
         vtable_[Molecule::CIRCLE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::CIRCLE][Molecule::SQUARE] = &Reactor::CollideCircle;
@@ -48,32 +39,35 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         border_.setFillColor( sf::Color::Transparent );
         border_.setOutlineColor( sf::Color::Red );
         border_.setOutlineThickness( 2.0f );
+
+        AddChild( std::make_unique<ReactorGraphs>( config::Reactor::Graphs::Position,
+                                                   config::Reactor::Graphs::Size ) );
+
+        AddChild( std::make_unique<ReactorButtons>( config::Reactor::Buttons::Position,
+                                                    config::Reactor::Buttons::Size ) );
     }
 
   public:
     virtual void
-    Update( gui::ContainerState& container_state ) override
+    Update() override
     {
-        ReactorState& reactor_state = dynamic_cast<ReactorState&>( container_state );
+        elapsed_time_ += config::Reactor::Physics::DeltaTime;
 
         UpdateBorder();
 
         Clear();
         HandleMoleculesCollisions();
         HandleWallCollisions();
-        PostRendering( reactor_state.delta_time );
+        PostRendering();
         HandleWallCollisions();
 
-        reactor_state.elapsed_time += application::Config::DeltaTime;
-        reactor_state.delta_time  = application::Config::DeltaTime;
-        reactor_state.full_energy = CalcSumEnergy();
-        reactor_state.n_molecules = molecules_.size();
+        UpdateChildren();
     }
 
     virtual void
     HandleEvents( const sf::Event& event ) override
     {
-        HandleDragEvent( event );
+        // HandleDragEvent( event );
 
         //         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
         //         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
@@ -87,16 +81,23 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         //             AddCircleMolecule( application::Config::CircleMoleculeRadius, 100, 10, 0, 10
         //             );
         //         }
+        HandleEventChildren( event );
+    }
+
+    float
+    GetElapsedTime() const
+    {
+        return elapsed_time_;
     }
 
     size_t
-    GetMoleculesCount() const
+    GetMoleculesAmount() const
     {
         return molecules_.size();
     }
 
     float
-    CalcSumEnergy() const
+    GetFullEnergy() const
     {
         float energy = 0;
 
@@ -120,25 +121,36 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
     void
     AddRandomCircleMolecule()
     {
-        AddCircleMolecule( application::Config::CircleMoleculeRadius,
-                           application::Config::ReactorSize.x * rand() / RAND_MAX,
-                           application::Config::ReactorSize.y * rand() / RAND_MAX,
-                           application::Config::StartVelocityMax * rand() / RAND_MAX,
-                           application::Config::StartVelocityMax * rand() / RAND_MAX );
+        AddCircleMolecule( config::Reactor::Physics::Molecule::Circle::Radius,
+                           config::Reactor::Size.x * rand() / RAND_MAX,
+                           config::Reactor::Size.y * rand() / RAND_MAX,
+                           config::Reactor::Physics::Molecule::StartVelocityMax * rand() / RAND_MAX,
+                           config::Reactor::Physics::Molecule::StartVelocityMax * rand() /
+                               RAND_MAX );
     }
 
     void
     AddCircleMolecule( float r, float x, float y, float vx, float vy )
     {
         molecules_.emplace_back( std::make_unique<CircleMolecule>(
-            CircleMolecule( r, x, y, vx, vy, application::Config::CircleMoleculeWeight ) ) );
+            CircleMolecule( r,
+                            x,
+                            y,
+                            vx,
+                            vy,
+                            config::Reactor::Physics::Molecule::Circle::Weight ) ) );
     }
 
     void
     AddSquareMolecule( float r, float x, float y, float vx, float vy )
     {
         molecules_.emplace_back( std::make_unique<SquareMolecule>(
-            SquareMolecule( r, x, y, vx, vy, application::Config::SquareMoleculeWeight ) ) );
+            SquareMolecule( r,
+                            x,
+                            y,
+                            vx,
+                            vy,
+                            config::Reactor::Physics::Molecule::Square::Weight ) ) );
     }
 
     void
@@ -146,8 +158,8 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
     {
         float x = size_.x + dist;
 
-        if ( application::Config::ReactorPos.x < x &&
-             x < application::Config::ReactorPos.x + application::Config::ReactorSize.x )
+        if ( config::Reactor::Position.x < x &&
+             x < config::Reactor::Position.x + config::Reactor::Size.x )
         {
             size_.x += dist;
             border_.setSize( size_ );
@@ -156,7 +168,7 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
 
   private:
     virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
         target.draw( border_ );
 
@@ -247,7 +259,7 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
     }
 
     void
-    PostRendering( float delta_time )
+    PostRendering()
     {
         //         std::sort( remove_indexes_.begin(), remove_indexes_.end(), []( size_t a, size_t b
         //         ) {
@@ -309,7 +321,7 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
 
         for ( auto& mol : molecules_ )
         {
-            mol.ptr->Move( delta_time );
+            mol.ptr->Move( config::Reactor::Physics::DeltaTime );
             mol.ptr->SetOrigin( pos_ );
         }
     }
@@ -396,11 +408,12 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
         float y             = ( mol1.GetY() + mol2.GetY() ) / 2.0f;
         float total_circles = mol1.GetWeight() + mol2.GetWeight();
         float energy        = mol1.GetEnergy() + mol2.GetEnergy();
-        float disp_distance =
-            2 * application::Config::CircleMoleculeRadius / std::sin( M_PI / total_circles );
+        float disp_distance = 2 * config::Reactor::Physics::Molecule::Circle::Radius /
+                              std::sin( M_PI / total_circles );
 
         float circle_energy = energy / total_circles;
-        float v_circle      = sqrt( 2 * circle_energy / application::Config::CircleMoleculeWeight );
+        float v_circle =
+            sqrt( 2 * circle_energy / config::Reactor::Physics::Molecule::Circle::Weight );
 
         for ( int i = 0; i < total_circles; i++ )
         {
@@ -411,17 +424,19 @@ class Reactor : public gui::Widget, public gui::Draggable<Reactor> {
             float spawn_x = x + disp_distance * cos_disp_angle;
             float spawn_y = y + disp_distance * sin_disp_angle;
 
-            new_molecules_.push_back(
-                { std::make_unique<CircleMolecule>( application::Config::CircleMoleculeRadius,
-                                                    spawn_x,
-                                                    spawn_y,
-                                                    v_circle * cos_disp_angle,
-                                                    v_circle * sin_disp_angle,
-                                                    application::Config::CircleMoleculeWeight ) } );
+            new_molecules_.push_back( { std::make_unique<CircleMolecule>(
+                config::Reactor::Physics::Molecule::Circle::Radius,
+                spawn_x,
+                spawn_y,
+                v_circle * cos_disp_angle,
+                v_circle * sin_disp_angle,
+                config::Reactor::Physics::Molecule::Circle::Weight ) } );
         }
     }
 
   private:
+    float elapsed_time_;
+
     std::array<std::array<CollideFuncT, Molecule::N_TYPES>, Molecule::N_TYPES> vtable_;
 
     struct MoleculeInfo

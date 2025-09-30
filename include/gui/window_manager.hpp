@@ -1,21 +1,20 @@
 #pragma once
 
-#include "config.hpp"
 #include "gui/container.hpp"
 #include <SFML/Graphics.hpp>
+#include <SFML/Graphics/RenderWindow.hpp>
+#include <SFML/Window/VideoMode.hpp>
+#include <SFML/Window/Window.hpp>
 #include <reactor/molecule.hpp>
 #include <reactor/reactor.hpp>
 #include <reactor/graph.hpp>
-#include <memory>
 
 namespace gui {
 
 class WindowManager {
   public:
-    explicit WindowManager()
-        : window_( application::Config::WindowVideoMode,
-                   application::Config::Title,
-                   application::Config::WindowStyle )
+    explicit WindowManager( float w, float h, const std::string& title, const sf::Uint32& style )
+        : window_( sf::VideoMode( w, h ), title, style ), desktop_( 0, 0, w, h )
     {
         window_.setFramerateLimit( 60 );
     }
@@ -46,37 +45,26 @@ class WindowManager {
                 window_.close();
             }
 
-            for ( auto& container : containers_ )
-            {
-                container->HandleEvents( event );
-            }
+            desktop_.HandleEvents( event );
         }
     }
 
     void
     Update()
     {
-        for ( auto& container : containers_ )
-        {
-            container->Update();
-        }
+        desktop_.Update();
     }
 
     void
     Draw()
     {
         window_.clear();
-
-        for ( const auto& container : containers_ )
-        {
-            window_.draw( *container );
-        }
-
+        window_.draw( desktop_ );
         window_.display();
     }
 
   protected:
-    std::vector<std::unique_ptr<Container>> containers_;
+    Widget desktop_;
 
   private:
     sf::RenderWindow window_;
