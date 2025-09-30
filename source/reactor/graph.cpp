@@ -7,7 +7,7 @@ namespace reactor {
 float
 ReactorGraphs::GetElapsedTime()
 {
-    auto* reactor_info = static_cast<Reactor*>( parent_ );
+    Reactor* reactor_info = static_cast<Reactor*>( parent_ );
 
     return reactor_info->GetElapsedTime();
 }
@@ -15,7 +15,7 @@ ReactorGraphs::GetElapsedTime()
 float
 ReactorGraphs::GetMoleculesAmount()
 {
-    auto* reactor_info = static_cast<Reactor*>( parent_ );
+    Reactor* reactor_info = static_cast<Reactor*>( parent_ );
 
     return reactor_info->GetMoleculesAmount();
 }
@@ -23,7 +23,7 @@ ReactorGraphs::GetMoleculesAmount()
 float
 ReactorGraphs::GetFullEnergy()
 {
-    auto* reactor_info = static_cast<Reactor*>( parent_ );
+    Reactor* reactor_info = static_cast<Reactor*>( parent_ );
 
     return reactor_info->GetFullEnergy();
 }
@@ -31,11 +31,9 @@ ReactorGraphs::GetFullEnergy()
 void
 EnergyGraph::Update()
 {
-    std::cerr << "Updating EnergyGraph... " << std::endl;
-
     UpdateGraphRoutine();
 
-    auto* reactor_info = static_cast<ReactorGraphs*>( parent_ );
+    ReactorGraphs* reactor_info = static_cast<ReactorGraphs*>( parent_ );
 
     AddPoint( reactor_info->GetElapsedTime(), reactor_info->GetFullEnergy() );
 }
@@ -45,7 +43,7 @@ NumberGraph::Update()
 {
     UpdateGraphRoutine();
 
-    auto* reactor_info = static_cast<ReactorGraphs*>( parent_ );
+    ReactorGraphs* reactor_info = static_cast<ReactorGraphs*>( parent_ );
 
     AddPoint( reactor_info->GetElapsedTime(), reactor_info->GetMoleculesAmount() );
 }

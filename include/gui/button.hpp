@@ -1,6 +1,7 @@
 #pragma once
 
 #include "gui/draggable.hpp"
+#include "gui/text.hpp"
 #include "gui/widget.hpp"
 #include <SFML/Graphics.hpp>
 #include <SFML/Graphics/RectangleShape.hpp>
@@ -8,32 +9,24 @@
 #include <SFML/Window/Event.hpp>
 #include <SFML/Window/Mouse.hpp>
 #include <config.hpp>
-#include <functional>
-#include <iomanip>
+#include <iostream>
 #include <string>
 
 namespace gui {
 
 class Button : public Widget, public gui::Draggable<Button> {
   public:
-    using FunctorType = std::function<void()>;
-
-    explicit Button( sf::Vector2f       pos,
-                     sf::Vector2f       size,
-                     const std::string& text,
-                     FunctorType        functor )
-        : Widget( pos, size ), functor_( functor ), pressed_( false ), hover_( false )
+    explicit Button( sf::Vector2f pos, sf::Vector2f size, const std::string& text )
+        : Widget( pos, size ), pressed_( false ), hover_( false ),
+          text_( pos,
+                 text,
+                 config::Reactor::Buttons::Common::Font::Name,
+                 config::Reactor::Buttons::Common::Font::Size,
+                 config::Reactor::Buttons::Common::Font::Color )
     {
-        font_.loadFromFile( config::Reactor::Buttons::Common::Font::Name );
-
         rect_.setPosition( pos_ );
         rect_.setSize( size_ );
         rect_.setFillColor( config::Reactor::Buttons::Common::Parameters::Color::Default );
-
-        text_.setFont( font_ );
-        text_.setString( text );
-        text_.setCharacterSize( config::Reactor::Buttons::Common::Font::Size );
-        text_.setFillColor( config::Reactor::Buttons::Common::Font::Color );
     }
 
     void
@@ -41,35 +34,41 @@ class Button : public Widget, public gui::Draggable<Button> {
     {
         HandleDragEvent( event );
 
-        bool mouse_pressed = ( event.type == sf::Event::MouseButtonPressed &&
-                               event.mouseButton.button == sf::Mouse::Left );
+        pressed_ = false;
 
-        sf::Vector2i mouse_pos = ( event.type == sf::Event::MouseMoved )
-                                     ? sf::Vector2i( event.mouseMove.x, event.mouseMove.y )
-                                     : sf::Vector2i( event.mouseButton.x, event.mouseButton.y );
-
-        bool is_hover = IsMouseOver( mouse_pos );
-
-        if ( mouse_pressed )
+        switch ( event.type )
         {
-            if ( is_hover && !pressed_ )
-            {
-                pressed_ = true;
-            }
-        } else
-        {
-            if ( pressed_ && is_hover )
-            {
-                if ( functor_ )
-                {
-                    functor_();
-                }
-            }
+            case sf::Event::MouseButtonPressed:
+                OnMousePress( event );
+                break;
+            case sf::Event::MouseMoved:
+                OnMouseMove( event );
+                break;
+            default:
+                break;
+        };
+    }
 
-            pressed_ = false;
+    void
+    OnMousePress( const sf::Event& event )
+    {
+        switch ( event.mouseButton.button )
+        {
+            case sf::Mouse::Left:
+                pressed_ = hover_;
+                break;
+            case sf::Mouse::Right:
+                HandleDragEvent( event );
+                break;
+            default:
+                break;
         }
+    }
 
-        hover_ = is_hover;
+    void
+    OnMouseMove( const sf::Event& event )
+    {
+        hover_ = PointInside( sf::Vector2f( event.mouseMove.x, event.mouseMove.y ) );
     }
 
     void
@@ -94,12 +93,17 @@ class Button : public Widget, public gui::Draggable<Button> {
         rect_.setFillColor( button_color );
     }
 
+    bool
+    IsPressed() const
+    {
+        return pressed_;
+    }
+
   private:
     void
     draw( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
-        // sf::RectangleShape rect()
-        states.transform.translate( parent_->GetAbsolutePos() );
+        states.transform.translate( GetParentAbsolutePos() );
 
         target.draw( rect_, states );
         target.draw( text_, states );
@@ -114,28 +118,14 @@ class Button : public Widget, public gui::Draggable<Button> {
     void
     UpdateTextPosition()
     {
-        const sf::FloatRect text_bounds = text_.getLocalBounds();
-        text_.setOrigin( text_bounds.left + text_bounds.width / 2.0f,
-                         text_bounds.top + text_bounds.height / 2.0f );
-        text_.setPosition( pos_.x + size_.x / 2.0f, pos_.y + size_.y / 2.0f );
-    }
-
-    bool
-    IsMouseOver( const sf::Vector2i& mouse_pos ) const
-    {
-        return ( mouse_pos.x >= pos_.x && mouse_pos.x <= pos_.x + size_.x &&
-                 mouse_pos.y >= pos_.y && mouse_pos.y <= pos_.y + size_.y );
+        text_.MoveInCenterOfRect( rect_.getPosition(), rect_.getSize() );
     }
 
   private:
-    sf::RectangleShape rect_;
-    sf::Text           text_;
-    sf::Font           font_;
+    Text text_;
 
     bool pressed_;
     bool hover_;
-
-    FunctorType functor_;
 };
 
 } // namespace gui

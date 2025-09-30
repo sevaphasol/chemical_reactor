@@ -63,7 +63,7 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     virtual void
     draw( sf::RenderTarget& target, sf::RenderStates states ) const override
     {
-        states.transform.translate( parent_->GetAbsolutePos() );
+        states.transform.translate( GetParentAbsolutePos() );
 
         DrawGridLines( target, states );
         DrawAxisLabels( target, states );

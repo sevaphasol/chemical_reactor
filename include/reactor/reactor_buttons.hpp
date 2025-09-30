@@ -4,7 +4,6 @@
 #include "gui/button.hpp"
 #include "gui/widget.hpp"
 #include <SFML/System/Vector2.hpp>
-#include <iostream>
 
 namespace reactor {
 
@@ -15,27 +14,51 @@ class ReactorButtons : public gui::Widget {
 
     explicit ReactorButtons( float x, float y, float w, float h ) : gui::Widget( x, y, w, h )
     {
-        AddChild( std::make_unique<gui::Button>(
-            config::Reactor::Buttons::Specialization::AddMolecule::Position,
-            config::Reactor::Buttons::Common::Parameters::Size,
-            "Add Molecule",
-            []() { std::cerr << "Pressed 'Add Molecule' button" << std::endl; } ) );
-        AddChild( std::make_unique<gui::Button>(
+        add_mol_button_ =
+            AddButtonAndGetAccess( config::Reactor::Buttons::Specialization::AddMolecule::Position,
+                                   config::Reactor::Buttons::Common::Parameters::Size,
+                                   "Add Molecule" );
+
+        rm_mol_button_ = AddButtonAndGetAccess(
             config::Reactor::Buttons::Specialization::RemoveMolecule::Position,
             config::Reactor::Buttons::Common::Parameters::Size,
-            "Remove Molecule",
-            []() { std::cerr << "Pressed 'Remove Molecule' button" << std::endl; } ) );
-        AddChild( std::make_unique<gui::Button>(
+            "Remove Molecule" );
+
+        mv_pistol_l_button_ = AddButtonAndGetAccess(
             config::Reactor::Buttons::Specialization::MovePiston::Left::Position,
             config::Reactor::Buttons::Common::Parameters::Size,
-            "Move Pistol Left",
-            []() { std::cerr << "Pressed 'Move Pistol Left' button" << std::endl; } ) );
-        AddChild( std::make_unique<gui::Button>(
+            "Move Pistol Left" );
+
+        mv_pistol_r_button_ = AddButtonAndGetAccess(
             config::Reactor::Buttons::Specialization::MovePiston::Right::Position,
             config::Reactor::Buttons::Common::Parameters::Size,
-            "Move Pistol Right",
-            []() { std::cerr << "Pressed 'Move Pistol Right' button" << std::endl; } ) );
+            "Move Pistol Right" );
     }
+
+    virtual void
+    Update() override;
+
+  private:
+    gui::Button*
+    AddButtonAndGetAccess( const sf::Vector2f& button_pos,
+                           const sf::Vector2f& button_size,
+                           const std::string&  button_name )
+    {
+        auto button_unique_p =
+            std::make_unique<gui::Button>( button_pos, button_size, button_name );
+
+        gui::Button* button_dirty_p = button_unique_p.get();
+
+        AddChild( std::move( button_unique_p ) );
+
+        return button_dirty_p;
+    }
+
+  private:
+    gui::Button* add_mol_button_;
+    gui::Button* rm_mol_button_;
+    gui::Button* mv_pistol_l_button_;
+    gui::Button* mv_pistol_r_button_;
 };
 
 } // namespace reactor

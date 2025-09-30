@@ -10,13 +10,14 @@
 #include <SFML/System/Vector2.hpp>
 #include <SFML/Window/Event.hpp>
 #include <memory>
-#include <optional>
 #include <vector>
 
 namespace gui {
 
 class Widget : public sf::Drawable {
   public:
+    explicit Widget( const sf::Vector2f& pos ) : pos_( pos ) {};
+
     explicit Widget( const sf::Vector2f& pos, const sf::Vector2f& size )
         : pos_( pos ), size_( size ), rect_( size ) {};
 
@@ -58,12 +59,6 @@ class Widget : public sf::Drawable {
         }
     }
 
-    virtual void
-    HandleEventsSelf() {};
-
-    virtual void
-    UpdateSelf() {};
-
     sf::Vector2f
     GetAbsolutePos() const
     {
@@ -103,8 +98,10 @@ class Widget : public sf::Drawable {
     bool
     PointInside( const sf::Vector2f& point ) const
     {
-        return ( ( point.x >= pos_.x && point.x <= pos_.x + size_.x ) &&
-                 ( point.y >= pos_.y && point.y <= pos_.y + size_.y ) );
+        sf::Vector2f abs_pos = GetAbsolutePos();
+
+        return ( ( point.x >= abs_pos.x && point.x <= abs_pos.x + size_.x ) &&
+                 ( point.y >= abs_pos.y && point.y <= abs_pos.y + size_.y ) );
     }
 
     void

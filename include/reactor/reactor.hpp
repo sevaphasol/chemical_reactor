@@ -60,6 +60,8 @@ class Reactor : public gui::Widget {
         HandleWallCollisions();
         PostRendering();
         HandleWallCollisions();
+
+        UpdateChildren();
     }
 
     virtual void
@@ -79,6 +81,7 @@ class Reactor : public gui::Widget {
         //             AddCircleMolecule( application::Config::CircleMoleculeRadius, 100, 10, 0, 10
         //             );
         //         }
+        HandleEventChildren( event );
     }
 
     float
