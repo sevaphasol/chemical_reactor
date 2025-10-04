@@ -1,0 +1,3 @@
+[submodule "gfx_core"]
+	path = gfx_core
+	url = git@github.com:sevaphasol/gfx_core.git

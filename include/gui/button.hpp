@@ -3,20 +3,14 @@
 #include "gui/draggable.hpp"
 #include "gui/text.hpp"
 #include "gui/widget.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Mouse.hpp>
-#include <config.hpp>
-#include <iostream>
+#include "config.hpp"
 #include <string>
 
 namespace gui {
 
 class Button : public Widget, public gui::Draggable<Button> {
   public:
-    explicit Button( sf::Vector2f pos, sf::Vector2f size, const std::string& text )
+    explicit Button( gfx_core::Vector2f pos, gfx_core::Vector2f size, const std::string& text )
         : Widget( pos, size ), pressed_( false ), hover_( false ),
           text_( pos,
                  text,
@@ -24,24 +18,24 @@ class Button : public Widget, public gui::Draggable<Button> {
                  config::Reactor::Buttons::Common::Font::Size,
                  config::Reactor::Buttons::Common::Font::Color )
     {
-        rect_.setPosition( pos_ );
-        rect_.setSize( size_ );
         rect_.setFillColor( config::Reactor::Buttons::Common::Parameters::Color::Default );
     }
 
     void
-    HandleEvents( const sf::Event& event ) override
+    HandleEvents( const gfx_core::Event& event ) override
     {
+        // std::cerr << "HandleEvents() from Button" << std::endl;
+
         HandleDragEvent( event );
 
         pressed_ = false;
 
         switch ( event.type )
         {
-            case sf::Event::MouseButtonPressed:
+            case gfx_core::Event::MouseButtonPressed:
                 OnMousePress( event );
                 break;
-            case sf::Event::MouseMoved:
+            case gfx_core::Event::MouseMoved:
                 OnMouseMove( event );
                 break;
             default:
@@ -50,14 +44,18 @@ class Button : public Widget, public gui::Draggable<Button> {
     }
 
     void
-    OnMousePress( const sf::Event& event )
+    OnMousePress( const gfx_core::Event& event )
     {
-        switch ( event.mouseButton.button )
+        // std::cerr << "OnMousePress() from Button" << std::endl;
+
+        switch ( event.mouse_button.button )
         {
-            case sf::Mouse::Left:
+            case gfx_core::Mouse::Left:
+                // std::cerr << "case gfx_core::Mouse::Left: from Button" << std::endl;
                 pressed_ = hover_;
+                // std::cerr << "pressed_ = " << pressed_ << std::endl;
                 break;
-            case sf::Mouse::Right:
+            case gfx_core::Mouse::Right:
                 HandleDragEvent( event );
                 break;
             default:
@@ -66,18 +64,17 @@ class Button : public Widget, public gui::Draggable<Button> {
     }
 
     void
-    OnMouseMove( const sf::Event& event )
+    OnMouseMove( const gfx_core::Event& event )
     {
-        hover_ = PointInside( sf::Vector2f( event.mouseMove.x, event.mouseMove.y ) );
+        hover_ = PointInside( gfx_core::Vector2f( event.mouse_move.x, event.mouse_move.y ) );
     }
 
     void
     Update() override
     {
-        UpdateRectPosition();
         UpdateTextPosition();
 
-        sf::Color button_color;
+        gfx_core::Color button_color;
 
         if ( pressed_ )
         {
@@ -101,24 +98,17 @@ class Button : public Widget, public gui::Draggable<Button> {
 
   private:
     void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    DrawChildren( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        states.transform.translate( GetParentAbsolutePos() );
+        transform.translate( GetPos() );
 
-        target.draw( rect_, states );
-        target.draw( text_, states );
-    }
-
-    void
-    UpdateRectPosition()
-    {
-        rect_.setPosition( pos_ );
+        window.draw( text_, transform );
     }
 
     void
     UpdateTextPosition()
     {
-        text_.MoveInCenterOfRect( rect_.getPosition(), rect_.getSize() );
+        text_.MoveInCenterOfRect( { 0, 0 }, rect_.getSize() );
     }
 
   private:

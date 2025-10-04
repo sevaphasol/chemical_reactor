@@ -1,25 +1,19 @@
 #pragma once
 
 #include "config.hpp"
-#include "gui/container_state.hpp"
-#include "gui/draggable.hpp"
+#include "gfx_core/vector2.hpp"
 #include "gui/widget.hpp"
 #include "reactor/molecule.hpp"
 #include "reactor/molecule_types.hpp"
 #include "reactor_buttons.hpp"
 #include "reactor_graphs.hpp"
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
-#include <SFML/Window/Keyboard.hpp>
 #include <array>
 #include <cmath>
 #include <memory>
+#include <ostream>
 #include <random>
 #include <vector>
+#include <iostream>
 
 namespace reactor {
 
@@ -27,7 +21,9 @@ class Reactor : public gui::Widget {
     using CollideFuncT = void ( Reactor::* )( Molecule& mol1, Molecule& mol2 );
 
   public:
-    Reactor( const sf::Vector2f& pos, const sf::Vector2f& size, const sf::Color& background_color )
+    Reactor( const gfx_core::Vector2f& pos,
+             const gfx_core::Vector2f& size,
+             const gfx_core::Color&    background_color )
         : gui::Widget( pos, size, background_color )
     {
         vtable_[Molecule::CIRCLE][Molecule::CIRCLE] = &Reactor::CollideCircle;
@@ -35,14 +31,14 @@ class Reactor : public gui::Widget {
         vtable_[Molecule::SQUARE][Molecule::CIRCLE] = &Reactor::CollideCircle;
         vtable_[Molecule::SQUARE][Molecule::SQUARE] = &Reactor::CollideSquareSquare;
 
+        border_.setPosition( pos );
         border_.setSize( size );
-        border_.setFillColor( sf::Color::Transparent );
-        border_.setOutlineColor( sf::Color::Red );
+        border_.setFillColor( gfx_core::Color::Transparent );
+        border_.setOutlineColor( gfx_core::Color::Red );
         border_.setOutlineThickness( 2.0f );
 
         AddChild( std::make_unique<ReactorGraphs>( config::Reactor::Graphs::Position,
                                                    config::Reactor::Graphs::Size ) );
-
         AddChild( std::make_unique<ReactorButtons>( config::Reactor::Buttons::Position,
                                                     config::Reactor::Buttons::Size ) );
     }
@@ -65,16 +61,16 @@ class Reactor : public gui::Widget {
     }
 
     virtual void
-    HandleEvents( const sf::Event& event ) override
+    HandleEvents( const gfx_core::Event& event ) override
     {
         // HandleDragEvent( event );
 
-        //         int left  = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Left ) );
-        //         int right = int( sf::Keyboard::isKeyPressed( sf::Keyboard::Right ) );
+        //         int left  = int( gfx_core::Keyboard::isKeyPressed( gfx_core::Keyboard::Left ) );
+        //         int right = int( gfx_core::Keyboard::isKeyPressed( gfx_core::Keyboard::Right ) );
         //
         //         MovePiston( ( right - left ) * 10 );
         //
-        //         bool add = sf::Keyboard::isKeyPressed( sf::Keyboard::A );
+        //         bool add = gfx_core::Keyboard::isKeyPressed( gfx_core::Keyboard::A );
         //
         //         if ( add )
         //         {
@@ -156,32 +152,45 @@ class Reactor : public gui::Widget {
     void
     MovePiston( float dist )
     {
-        float x = size_.x + dist;
+        // std::cerr << "MovePistol(" << dist << ")" << std::endl;
 
-        if ( config::Reactor::Position.x < x &&
-             x < config::Reactor::Position.x + config::Reactor::Size.x )
+        gfx_core::Vector2f size = border_.getSize();
+
+        float x = size.x + dist;
+
+        // std::cerr << x << " = " << size.x << " + " << dist << std::endl;
+
+        if ( config::Reactor::Position.x <= x &&
+             x <= config::Reactor::Position.x + config::Reactor::Size.x )
         {
-            size_.x += dist;
-            border_.setSize( size_ );
+            // std::cerr << "size.x = " << size.x << std::endl;
+            // std::cerr << "x      = " << x << std::endl;
+
+            size.x = x;
+
+            // std::cerr << "size.x = " << size.x << std::endl;
+
+            border_.setSize( size );
+            SetSize( size );
         }
     }
 
   private:
     virtual void
-    DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const override
+    DrawSelf( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        target.draw( border_ );
+        window.draw( border_ );
 
         for ( const auto& molecule : molecules_ )
         {
-            target.draw( *molecule.ptr );
+            window.draw( *molecule.ptr );
         }
     }
 
     void
     UpdateBorder()
     {
-        border_.setPosition( pos_ );
+        border_.setPosition( GetPos() );
     }
 
     void
@@ -195,8 +204,8 @@ class Reactor : public gui::Widget {
             float vx = mol.ptr->GetVx();
             float vy = mol.ptr->GetVy();
 
-            float width  = size_.x;
-            float height = size_.y;
+            float width  = GetSize().x;
+            float height = GetSize().y;
 
             if ( x + 2 * r > width )
             {
@@ -322,7 +331,7 @@ class Reactor : public gui::Widget {
         for ( auto& mol : molecules_ )
         {
             mol.ptr->Move( config::Reactor::Physics::DeltaTime );
-            mol.ptr->SetOrigin( pos_ );
+            mol.ptr->SetOrigin( GetPos() );
         }
     }
 
@@ -435,7 +444,7 @@ class Reactor : public gui::Widget {
     }
 
   private:
-    float elapsed_time_;
+    float elapsed_time_{ 0.0f };
 
     std::array<std::array<CollideFuncT, Molecule::N_TYPES>, Molecule::N_TYPES> vtable_;
 
@@ -452,7 +461,7 @@ class Reactor : public gui::Widget {
     std::vector<size_t>       remove_indexes_;
     std::vector<MoleculeInfo> new_molecules_;
 
-    sf::RectangleShape border_;
+    gfx_core::RectangleShape border_;
 };
 
 } // namespace reactor

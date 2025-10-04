@@ -1,6 +1,6 @@
 #pragma once
 
-#include <SFML/Window/Event.hpp>
+#include "gfx_core/event.hpp"
 
 namespace gui {
 
@@ -8,17 +8,17 @@ template<typename Derived>
 class Draggable {
   public:
     void
-    HandleDragEvent( const sf::Event& event )
+    HandleDragEvent( const gfx_core::Event& event )
     {
         switch ( event.type )
         {
-            case sf::Event::MouseButtonPressed:
+            case gfx_core::Event::MouseButtonPressed:
                 HandleMousePress( event );
                 break;
-            case sf::Event::MouseMoved:
+            case gfx_core::Event::MouseMoved:
                 HandleMouseMove( event );
                 break;
-            case sf::Event::MouseButtonReleased:
+            case gfx_core::Event::MouseButtonReleased:
                 is_dragging_ = false;
                 break;
             default:
@@ -27,12 +27,12 @@ class Draggable {
     }
 
     void
-    HandleMousePress( const sf::Event& event )
+    HandleMousePress( const gfx_core::Event& event )
     {
-        if ( event.mouseButton.button == sf::Mouse::Right )
+        if ( event.mouse_button.button == gfx_core::Mouse::Right )
         {
-            sf::Vector2f mouse_pos( static_cast<float>( event.mouseButton.x ),
-                                    static_cast<float>( event.mouseButton.y ) );
+            gfx_core::Vector2f mouse_pos( static_cast<float>( event.mouse_button.x ),
+                                          static_cast<float>( event.mouse_button.y ) );
             if ( self().PointInside( mouse_pos ) )
             {
                 is_dragging_ = true;
@@ -42,19 +42,19 @@ class Draggable {
     }
 
     void
-    HandleMouseMove( const sf::Event& event )
+    HandleMouseMove( const gfx_core::Event& event )
     {
         if ( is_dragging_ )
         {
-            sf::Vector2f mouse_pos( static_cast<float>( event.mouseMove.x ),
-                                    static_cast<float>( event.mouseMove.y ) );
+            gfx_core::Vector2f mouse_pos( static_cast<float>( event.mouse_move.x ),
+                                          static_cast<float>( event.mouse_move.y ) );
             self().SetPos( mouse_pos - drag_offset_ );
         }
     }
 
   private:
-    bool         is_dragging_ = false;
-    sf::Vector2f drag_offset_;
+    bool               is_dragging_ = false;
+    gfx_core::Vector2f drag_offset_;
 
     Derived&
     self()

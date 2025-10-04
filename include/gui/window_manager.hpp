@@ -1,20 +1,18 @@
 #pragma once
 
-#include "gui/container.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/RenderWindow.hpp>
-#include <SFML/Window/VideoMode.hpp>
-#include <SFML/Window/Window.hpp>
 #include <reactor/molecule.hpp>
 #include <reactor/reactor.hpp>
 #include <reactor/graph.hpp>
+
+#include "gfx_core/color.hpp"
+#include "gfx_core/window.hpp"
 
 namespace gui {
 
 class WindowManager {
   public:
-    explicit WindowManager( float w, float h, const std::string& title, const sf::Uint32& style )
-        : window_( sf::VideoMode( w, h ), title, style ), desktop_( 0, 0, w, h )
+    explicit WindowManager( float w, float h, const std::string& title )
+        : window_( w, h, title.data() ), desktop_( 0, 0, w, h )
     {
         window_.setFramerateLimit( 60 );
     }
@@ -36,11 +34,11 @@ class WindowManager {
     void
     HandleEvents()
     {
-        sf::Event event;
+        gfx_core::Event event;
 
         while ( window_.pollEvent( event ) )
         {
-            if ( event.type == sf::Event::Closed )
+            if ( event.type == gfx_core::Event::Closed )
             {
                 window_.close();
             }
@@ -67,7 +65,7 @@ class WindowManager {
     Widget desktop_;
 
   private:
-    sf::RenderWindow window_;
+    gfx_core::Window window_;
 };
 
 } // namespace gui

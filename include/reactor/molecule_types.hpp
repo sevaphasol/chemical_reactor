@@ -1,9 +1,9 @@
 #pragma once
 
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
+#include "gfx_core/window.hpp"
 #include "reactor/molecule.hpp"
+#include "gfx_core/circle_shape.hpp"
+#include "gfx_core/rectangle_shape.hpp"
 #include "config.hpp"
 
 namespace reactor {
@@ -43,19 +43,19 @@ class CircleMolecule : public Molecule {
     }
 
     virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    draw( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        target.draw( shape_, states );
+        window.draw( shape_, transform );
     }
 
   private:
-    sf::CircleShape shape_;
+    gfx_core::CircleShape shape_;
 };
 
 class SquareMolecule : public Molecule {
   public:
     SquareMolecule( double r, double x, double y, double vx, double vy, double weight )
-        : Molecule( r, x, y, vx, vy, weight ), shape_( sf::Vector2f( r * 2, r * 2 ) )
+        : Molecule( r, x, y, vx, vy, weight ), shape_( gfx_core::Vector2f( r * 2, r * 2 ) )
     {
         shape_.setPosition( x, y );
         shape_.setFillColor( config::Reactor::Physics::Molecule::Square::Color );
@@ -87,13 +87,13 @@ class SquareMolecule : public Molecule {
     }
 
     virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    draw( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        target.draw( shape_, states );
+        window.draw( shape_, transform );
     }
 
   private:
-    sf::RectangleShape shape_;
+    gfx_core::RectangleShape shape_;
 };
 
 } // namespace reactor

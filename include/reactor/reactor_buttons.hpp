@@ -3,13 +3,12 @@
 #include "config.hpp"
 #include "gui/button.hpp"
 #include "gui/widget.hpp"
-#include <SFML/System/Vector2.hpp>
 
 namespace reactor {
 
 class ReactorButtons : public gui::Widget {
   public:
-    explicit ReactorButtons( sf::Vector2f pos, sf::Vector2f size )
+    explicit ReactorButtons( gfx_core::Vector2f pos, gfx_core::Vector2f size )
         : ReactorButtons( pos.x, pos.y, size.x, size.y ) {};
 
     explicit ReactorButtons( float x, float y, float w, float h ) : gui::Widget( x, y, w, h )
@@ -40,9 +39,9 @@ class ReactorButtons : public gui::Widget {
 
   private:
     gui::Button*
-    AddButtonAndGetAccess( const sf::Vector2f& button_pos,
-                           const sf::Vector2f& button_size,
-                           const std::string&  button_name )
+    AddButtonAndGetAccess( const gfx_core::Vector2f& button_pos,
+                           const gfx_core::Vector2f& button_size,
+                           const std::string&        button_name )
     {
         auto button_unique_p =
             std::make_unique<gui::Button>( button_pos, button_size, button_name );

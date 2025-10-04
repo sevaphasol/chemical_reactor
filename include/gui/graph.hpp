@@ -1,14 +1,18 @@
 #pragma once
 
+#include "gfx_core/font.hpp"
+#include "gfx_core/primitive_type.hpp"
+#include "gfx_core/rectangle_shape.hpp"
+#include "gfx_core/text.hpp"
+#include "gfx_core/transform.hpp"
+#include "gfx_core/vector2.hpp"
+#include "gfx_core/vertex_array.hpp"
+#include "gfx_core/window.hpp"
 #include "gui/draggable.hpp"
 #include "gui/widget.hpp"
-#include <SFML/Graphics.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
+#include "gfx_core/vertex.hpp"
 #include <algorithm>
+#include <cassert>
 #include <config.hpp>
 #include <iomanip>
 #include <ios>
@@ -21,16 +25,19 @@ namespace gui {
 
 class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
   public:
-    Graph( sf::Vector2f pos, sf::Vector2f size, const std::string& title )
+    Graph( gfx_core::Vector2f pos, gfx_core::Vector2f size, const std::string& title )
         : gui::Widget( pos, size ), title_( title ), min_bounds_( 0, 0 ), max_bounds_( 1, 1 )
     {
-        font_.loadFromFile( config::Reactor::Graphs::Common::Font::Name );
+        bool r = font_.loadFromFile( config::Reactor::Graphs::Common::Font::Name );
+        // // std::cerr << r << std::endl;
 
+        // // std::cerr << "Setting title_text_ font" << std::endl;
         title_text_.setFont( font_ );
         title_text_.setString( title_ );
         title_text_.setCharacterSize( config::Reactor::Graphs::Common::Font::Title::Size );
         title_text_.setFillColor( config::Reactor::Graphs::Common::Font::Color );
 
+        // // std::cerr << "Setting axis_labels_text_ font" << std::endl;
         axis_labels_text_.setFont( font_ );
         axis_labels_text_.setCharacterSize( config::Reactor::Graphs::Common::Font::Labels::Size );
         axis_labels_text_.setFillColor( config::Reactor::Graphs::Common::Font::Color );
@@ -39,7 +46,7 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     }
 
     virtual void
-    HandleEvents( const sf::Event& event ) override
+    HandleEvents( const gfx_core::Event& event ) override
     {
         HandleDragEvent( event );
     };
@@ -54,21 +61,21 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     void
     AddPoint( double x, double y )
     {
-        raw_points_.emplace_back( sf::Vector2f( x, y ) );
+        raw_points_.emplace_back( gfx_core::Vector2f( x, y ) );
 
         UpdateDataBounds( x, y );
     }
 
   private:
     virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    DrawSelf( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        states.transform.translate( GetParentAbsolutePos() );
+        // // std::cerr << "DrawSelf() from " << typeid( *this ).name() << std::endl;
 
-        DrawGridLines( target, states );
-        DrawAxisLabels( target, states );
-        target.draw( plot_, states );
-        target.draw( title_text_, states );
+        DrawGridLines( window, transform );
+        DrawAxisLabels( window, transform );
+        window.draw( plot_, transform );
+        window.draw( title_text_, transform );
     }
 
     void
@@ -87,21 +94,23 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
             range_y = 1.0f;
         }
 
-        step_.x = size_.x / range_x;
-        step_.y = size_.y / range_y;
+        gfx_core::Vector2f size = GetSize();
+
+        step_.x = size.x / range_x;
+        step_.y = size.y / range_y;
     }
 
     void
-    DrawGridLines( sf::RenderTarget& target, sf::RenderStates states ) const
+    DrawGridLines( gfx_core::Window& window, gfx_core::Transform transform ) const
     {
-        DrawGridLines( target, states, true );
-        DrawGridLines( target, states, false );
+        DrawGridLines( window, transform, true );
+        DrawGridLines( window, transform, false );
     }
 
     void
-    DrawGridLines( sf::RenderTarget& target, sf::RenderStates states, bool horizontal ) const
+    DrawGridLines( gfx_core::Window& window, gfx_core::Transform transform, bool horizontal ) const
     {
-        sf::Vertex line[2];
+        gfx_core::Vertex line[2];
         line[0].color = config::Reactor::Graphs::Common::Parameters::Color::Grid;
         line[1].color = config::Reactor::Graphs::Common::Parameters::Color::Grid;
 
@@ -119,28 +128,28 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
             {
                 screen_coord = LogicalToScreenY( logical_val );
 
-                line[0].position = sf::Vector2f( pos_.x, screen_coord );
-                line[1].position = sf::Vector2f( pos_.x + size_.x, screen_coord );
+                line[0].position = gfx_core::Vector2f( GetPos().x, screen_coord );
+                line[1].position = gfx_core::Vector2f( GetPos().x + GetSize().x, screen_coord );
             } else
             {
                 screen_coord = LogicalToScreenX( logical_val );
 
-                line[0].position = sf::Vector2f( screen_coord, pos_.y );
-                line[1].position = sf::Vector2f( screen_coord, pos_.y + size_.y );
+                line[0].position = gfx_core::Vector2f( screen_coord, GetPos().y );
+                line[1].position = gfx_core::Vector2f( screen_coord, GetPos().y + GetSize().y );
             }
 
-            target.draw( line, 2, sf::Lines, states );
+            window.draw( line, 2, gfx_core::Lines, transform );
         }
     }
 
     void
-    DrawAxisLabels( sf::RenderTarget& target, sf::RenderStates states ) const
+    DrawAxisLabels( gfx_core::Window& window, gfx_core::Transform transform ) const
     {
-        DrawLabelsForAxis( target, states, false );
+        DrawLabelsForAxis( window, transform, false );
     }
 
     void
-    DrawLabelsForAxis( sf::RenderTarget& target, sf::RenderStates states, bool x_axis ) const
+    DrawLabelsForAxis( gfx_core::Window& target, gfx_core::Transform transform, bool x_axis ) const
     {
         double min_val = x_axis ? min_bounds_.x : min_bounds_.y;
         double max_val = x_axis ? max_bounds_.x : max_bounds_.y;
@@ -175,16 +184,19 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
             oss << std::setprecision( 2 ) << std::scientific << logical_val;
             axis_labels_text_.setString( oss.str() );
             axis_labels_text_.setPosition( screen_x, screen_y );
-            target.draw( axis_labels_text_, states );
+            target.draw( axis_labels_text_, transform );
         }
     }
 
     void
     UpdateTitle()
     {
+        gfx_core::Vector2f pos  = GetPos();
+        gfx_core::Vector2f size = GetSize();
+
         title_text_.setPosition(
-            pos_.x + size_.x / 2.0f - title_text_.getGlobalBounds().width / 2.0f,
-            pos_.y - config::Reactor::Graphs::Common::Parameters::Title::Padding::Y );
+            pos.x + size.x / 2.0f - title_text_.getGlobalBounds().w / 2.0f,
+            pos.y - config::Reactor::Graphs::Common::Parameters::Title::Padding::Y );
     }
 
     void
@@ -192,10 +204,10 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     {
         size_t n_points = raw_points_.size();
 
-        min_bounds_.x = n_points == 1 ? x : std::min<double>( x, min_bounds_.x );
-        max_bounds_.x = n_points == 1 ? x : std::max<double>( x, max_bounds_.x );
-        min_bounds_.y = n_points == 1 ? y : std::min<double>( y, min_bounds_.y );
-        max_bounds_.y = n_points == 1 ? y : std::max<double>( y, max_bounds_.y );
+        min_bounds_.x = ( n_points == 1 ) ? x : std::min<double>( x, min_bounds_.x );
+        max_bounds_.x = ( n_points == 1 ) ? x : std::max<double>( x, max_bounds_.x );
+        min_bounds_.y = ( n_points == 1 ) ? y : std::min<double>( y, min_bounds_.y );
+        max_bounds_.y = ( n_points == 1 ) ? y : std::max<double>( y, max_bounds_.y );
 
         RecalculateSteps();
     }
@@ -203,14 +215,17 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     void
     UpdateVertexArray()
     {
-        plot_ = sf::VertexArray( sf::LineStrip, raw_points_.size() );
+        plot_ = gfx_core::VertexArray( gfx_core::LineStrip, raw_points_.size() );
 
         for ( size_t i = 0; i < raw_points_.size(); i++ )
         {
             double screen_x = LogicalToScreenX( raw_points_[i].x );
             double screen_y = LogicalToScreenY( raw_points_[i].y );
 
-            plot_[i].position = sf::Vector2f( screen_x, screen_y );
+            // // std::cerr << "screen_x = " << screen_x << std::endl;
+            // // std::cerr << "screen_y = " << screen_y << std::endl;
+
+            plot_[i].position = gfx_core::Vector2f( screen_x, screen_y );
             plot_[i].color    = config::Reactor::Graphs::Common::Parameters::Color::Plot;
         }
     }
@@ -218,28 +233,28 @@ class Graph : public gui::Widget, public ::gui::Draggable<Graph> {
     double
     LogicalToScreenX( double x ) const
     {
-        return pos_.x + ( x - min_bounds_.x ) * step_.x;
+        return GetPos().x + ( x - min_bounds_.x ) * step_.x;
     }
 
     double
     LogicalToScreenY( double y ) const
     {
-        return pos_.y + size_.y - ( y - min_bounds_.y ) * step_.y;
+        return GetPos().y + GetSize().y - ( y - min_bounds_.y ) * step_.y;
     }
 
   private:
-    std::string      title_;
-    sf::Font         font_;
-    sf::Text         title_text_;
-    mutable sf::Text axis_labels_text_;
+    std::string            title_;
+    gfx_core::Font         font_;
+    gfx_core::Text         title_text_;
+    mutable gfx_core::Text axis_labels_text_;
 
-    sf::Vector2f step_;
+    gfx_core::Vector2f step_{ 0, 0 };
 
-    sf::Vector2f min_bounds_;
-    sf::Vector2f max_bounds_;
+    gfx_core::Vector2f min_bounds_{ 0, 0 };
+    gfx_core::Vector2f max_bounds_{ 0, 0 };
 
-    sf::VertexArray           plot_;
-    std::vector<sf::Vector2f> raw_points_;
+    gfx_core::VertexArray           plot_;
+    std::vector<gfx_core::Vector2f> raw_points_;
 };
 
 } // namespace gui

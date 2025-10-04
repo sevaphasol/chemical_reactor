@@ -1,3 +1,4 @@
+#include <iostream>
 #include <SFML/Graphics/Color.hpp>
 #include <SFML/Window/Context.hpp>
 #include "config.hpp"
@@ -8,8 +9,7 @@ main()
 {
     reactor::ReactorWindow application( config::Reactor::Window::Width,
                                         config::Reactor::Window::Height,
-                                        config::Reactor::Window::Title,
-                                        config::Reactor::Window::Style );
+                                        config::Reactor::Window::Title );
 
     application.Run();
 

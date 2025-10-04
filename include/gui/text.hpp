@@ -1,26 +1,23 @@
 // text.hpp — обновлённая версия
 #pragma once
 
+#include "gfx_core/font.hpp"
+#include "gfx_core/rect.hpp"
+#include "gfx_core/text.hpp"
+#include "gfx_core/transform.hpp"
+#include "gfx_core/window.hpp"
 #include "gui/widget.hpp"
-#include <SFML/Config.hpp>
-#include <SFML/Graphics/Font.hpp>
-#include <SFML/Graphics/Rect.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Text.hpp>
-#include <SFML/System/Vector2.hpp>
 #include <string>
 
 namespace gui {
 
 class Text : public Widget {
   public:
-    explicit Text( const sf::Vector2f& pos,
-                   const std::string&  text,
-                   const std::string&  font_name,
-                   const sf::Uint32&   font_size,
-                   const sf::Color&    text_color )
+    explicit Text( const gfx_core::Vector2f& pos,
+                   const std::string&        text,
+                   const std::string&        font_name,
+                   unsigned int              font_size,
+                   const gfx_core::Color&    text_color )
         : Widget( pos )
     {
         font_.loadFromFile( font_name );
@@ -30,11 +27,11 @@ class Text : public Widget {
         text_.setFillColor( text_color );
     }
 
-    explicit Text( const sf::Vector2f& pos,
-                   const std::string&  text,
-                   const sf::Font&     font,
-                   const sf::Uint32&   font_size,
-                   const sf::Color&    text_color )
+    explicit Text( const gfx_core::Vector2f& pos,
+                   const std::string&        text,
+                   const gfx_core::Font&     font,
+                   unsigned int              font_size,
+                   const gfx_core::Color&    text_color )
         : Widget( pos ), font_( font ), text_( text, font, font_size )
     {
         text_.setFillColor( text_color );
@@ -46,31 +43,31 @@ class Text : public Widget {
         text_.setString( str );
     }
 
-    sf::FloatRect
+    gfx_core::FloatRect
     GetLocalBounds() const
     {
         return text_.getLocalBounds();
     }
 
     void
-    MoveInCenterOfRect( const sf::Vector2f& rect_pos, const sf::Vector2f& rect_size )
+    MoveInCenterOfRect( const gfx_core::Vector2f& rect_pos, const gfx_core::Vector2f& rect_size )
     {
-        const sf::FloatRect text_bounds = text_.getLocalBounds();
-        text_.setOrigin( text_bounds.left + text_bounds.width / 2.0f,
-                         text_bounds.top + text_bounds.height / 2.0f );
+        const gfx_core::FloatRect text_bounds = text_.getLocalBounds();
+        text_.setOrigin( text_bounds.x + text_bounds.w / 2.0f,
+                         text_bounds.y + text_bounds.h / 2.0f );
         text_.setPosition( rect_pos.x + rect_size.x / 2.0f, rect_pos.y + rect_size.y / 2.0f );
     }
 
     virtual void
-    DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const override
+    DrawSelf( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        states.transform.translate( GetParentAbsolutePos() );
-        target.draw( text_, states );
+        // transform.translate( GetPos() );
+        window.draw( text_, transform );
     }
 
   private:
-    sf::Font font_;
-    sf::Text text_;
+    gfx_core::Font font_;
+    gfx_core::Text text_;
 };
 
 } // namespace gui

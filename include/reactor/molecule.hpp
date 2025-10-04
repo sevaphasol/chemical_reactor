@@ -1,13 +1,10 @@
 #pragma once
 
-#include <SFML/Graphics/CircleShape.hpp>
-#include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/System/Vector2.hpp>
+#include "gfx_core/drawable.hpp"
 
 namespace reactor {
 
-class Molecule : public sf::Drawable {
+class Molecule : public gfx_core::Drawable {
   public:
     Molecule( double r, double x, double y, double vx, double vy, double weight )
         : r_( r ), x_( x ), y_( y ), vx_( vx ), vy_( vy ), weight_( weight ) {};
@@ -163,7 +160,7 @@ class Molecule : public sf::Drawable {
     }
 
     void
-    SetOrigin( sf::Vector2f origin )
+    SetOrigin( gfx_core::Vector2f origin )
     {
         origin_x_ = origin.x;
         origin_y_ = origin.y;

@@ -7,10 +7,13 @@ namespace reactor {
 void
 ReactorButtons::Update()
 {
+    // std::cerr << "Update() from ReactorButtons" << std::endl;
+
     Reactor* reactor = static_cast<Reactor*>( parent_ );
 
     if ( add_mol_button_->IsPressed() )
     {
+        // std::cerr << "add_mol_button_->IsPressed()" << std::endl;
         reactor->AddRandomCircleMolecule();
     }
 

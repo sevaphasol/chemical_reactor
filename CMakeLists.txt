@@ -10,13 +10,17 @@ pkg_check_modules(SFML REQUIRED IMPORTED_TARGET sfml-graphics sfml-window sfml-s
 
 set(SOURCE_DIR source)
 set(INCLUDE_DIR include)
+set(GFX_CORE_SRC gfx_core/source)
+set(GFX_CORE_INC gfx_core/include)
 
 file( GLOB_RECURSE SOURCE_FILES ${SOURCE_DIR}/*.cpp
-								${SOURCE_DIR}/**/*.cpp )
+								${SOURCE_DIR}/**/*.cpp
+								${GFX_CORE_SRC}/*.cpp
+								${GFX_CORE_SRC}/**/*.cpp )
 
 add_executable(chemical-reaction ${SOURCE_FILES})
 
-target_include_directories(chemical-reaction PRIVATE ${INCLUDE_DIR})
+target_include_directories(chemical-reaction PRIVATE ${INCLUDE_DIR} ${GFX_CORE_INC})
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
 

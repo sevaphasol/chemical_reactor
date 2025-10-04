@@ -1,49 +1,65 @@
 #pragma once
 
-#include <SFML/Graphics/Color.hpp>
-#include <SFML/Graphics/Drawable.hpp>
-#include <SFML/Graphics/Rect.hpp>
+#include "gfx_core/color.hpp"
+#include "gfx_core/drawable.hpp"
+#include "gfx_core/rectangle_shape.hpp"
+#include "gfx_core/event.hpp"
+#include "gfx_core/transform.hpp"
+#include "gfx_core/transformable.hpp"
+#include "gfx_core/vector2.hpp"
+#include "gfx_core/window.hpp"
 #include <SFML/Graphics/RectangleShape.hpp>
-#include <SFML/Graphics/RenderStates.hpp>
-#include <SFML/Graphics/RenderTarget.hpp>
-#include <SFML/Graphics/Transformable.hpp>
-#include <SFML/System/Vector2.hpp>
-#include <SFML/Window/Event.hpp>
 #include <memory>
 #include <vector>
+#include <iostream>
 
 namespace gui {
 
-class Widget : public sf::Drawable {
+class Widget : public gfx_core::Drawable {
   public:
-    explicit Widget( const sf::Vector2f& pos ) : pos_( pos ) {};
+    explicit Widget( const gfx_core::Vector2f& pos ) { rect_.setPosition( pos ); };
 
-    explicit Widget( const sf::Vector2f& pos, const sf::Vector2f& size )
-        : pos_( pos ), size_( size ), rect_( size ) {};
+    explicit Widget( const gfx_core::Vector2f& pos, const gfx_core::Vector2f& size ) : rect_( size )
+    {
+        rect_.setPosition( pos );
+    };
 
-    explicit Widget( const sf::Vector2f& pos, const sf::Vector2f& size, const sf::Color& color )
+    explicit Widget( const gfx_core::Vector2f& pos,
+                     const gfx_core::Vector2f& size,
+                     const gfx_core::Color&    color )
         : Widget( pos, size )
     {
         rect_.setFillColor( color );
     }
 
-    explicit Widget( float x, float y, float w, float h ) : pos_( x, y ), size_( w, h ) {};
+    explicit Widget( float x, float y, float w, float h ) : rect_( gfx_core::Vector2f( w, h ) )
+    {
+        rect_.setPosition( gfx_core::Vector2f( x, y ) );
+        rect_.setFillColor( gfx_core::Color::Black );
+    };
 
     virtual void
-    HandleEvents( const sf::Event& event )
+    HandleEvents( const gfx_core::Event& event )
     {
+        // // std::cerr << "HandleEvents() from widget " << typeid( *this ).name() << std::endl;
+
         HandleEventChildren( event );
     }
 
     virtual void
     Update()
     {
+        // // // std::cerr << "Update() from widget " << typeid( *this ).name() << std::endl;
+
         UpdateChildren();
     }
 
     void
-    HandleEventChildren( const sf::Event& event )
+    HandleEventChildren( const gfx_core::Event& event )
     {
+        // // std::cerr << "HandleEventChildren() from widget " << typeid( *this ).name() <<
+        // std::endl;
+
         for ( auto& child : childern_ )
         {
             child->HandleEvents( event );
@@ -53,55 +69,61 @@ class Widget : public sf::Drawable {
     virtual void
     UpdateChildren()
     {
+        // // std::cerr << "UpdateChildren() from widget " << typeid( *this ).name() << std::endl;
+
         for ( auto& child : childern_ )
         {
             child->Update();
         }
     }
 
-    sf::Vector2f
+    gfx_core::Vector2f
     GetAbsolutePos() const
     {
-        return pos_ + GetParentAbsolutePos();
+        return GetPos() + GetParentAbsolutePos();
     }
 
-    sf::Vector2f
+    gfx_core::Vector2f
     GetParentAbsolutePos() const
     {
-        return ( parent_ != nullptr ) ? parent_->GetAbsolutePos() : sf::Vector2f( 0, 0 );
+        // std::cerr << "parent_ = " << parent_ << std::endl;
+
+        return ( parent_ != nullptr ) ? parent_->GetAbsolutePos() : gfx_core::Vector2f( 0, 0 );
     }
 
-    sf::Vector2f
+    gfx_core::Vector2f
     GetPos() const
     {
-        return pos_;
+        return rect_.getPosition();
     }
 
-    sf::Vector2f
+    gfx_core::Vector2f
     GetSize() const
     {
-        return size_;
+        return rect_.getSize();
     }
 
     void
-    SetPos( const sf::Vector2f& pos )
+    SetPos( const gfx_core::Vector2f& pos )
     {
-        pos_ = pos;
+        rect_.setPosition( pos );
     }
 
     void
-    SetSize( const sf::Vector2f& size )
+    SetSize( const gfx_core::Vector2f& size )
     {
-        size_ = size;
+        rect_.setSize( size );
     }
 
     bool
-    PointInside( const sf::Vector2f& point ) const
+    PointInside( const gfx_core::Vector2f& point ) const
     {
-        sf::Vector2f abs_pos = GetAbsolutePos();
+        gfx_core::Vector2f abs_pos = GetAbsolutePos();
 
-        return ( ( point.x >= abs_pos.x && point.x <= abs_pos.x + size_.x ) &&
-                 ( point.y >= abs_pos.y && point.y <= abs_pos.y + size_.y ) );
+        gfx_core::Vector2f size = GetSize();
+
+        return ( ( point.x >= abs_pos.x && point.x <= abs_pos.x + size.x ) &&
+                 ( point.y >= abs_pos.y && point.y <= abs_pos.y + size.y ) );
     }
 
     void
@@ -113,36 +135,46 @@ class Widget : public sf::Drawable {
 
   private:
     virtual void
-    draw( sf::RenderTarget& target, sf::RenderStates states ) const override
+    draw( gfx_core::Window& window, gfx_core::Transform transform ) const override
     {
-        DrawSelf( target, states );
-        DrawChildren( target, states );
+        // // std::cerr << "draw() from widget " << typeid( *this ).name() << std::endl;
+
+        DrawSelf( window, transform );
+        DrawChildren( window, transform );
     }
 
     virtual void
-    DrawSelf( sf::RenderTarget& target, sf::RenderStates states ) const
+    DrawSelf( gfx_core::Window& window, gfx_core::Transform transform ) const
     {
-        states.transform.translate( GetParentAbsolutePos() );
+        // // std::cerr << "DrawSelf() from widget " << typeid( *this ).name() << std::endl;
 
-        target.draw( rect_, states );
+        // auto sf_color = reinterpret_cast<sf::RectangleShape*>( rect_.getImpl() )->getFillColor();
+
+        // // std::cerr << "r = " << int( sf_color.r ) << std::endl;
+        // // std::cerr << "g = " << int( sf_color.g ) << std::endl;
+        // // std::cerr << "b = " << int( sf_color.b ) << std::endl;
+        // // std::cerr << "a = " << int( sf_color.a ) << std::endl;
+
+        window.draw( rect_, transform );
     }
 
     virtual void
-    DrawChildren( sf::RenderTarget& target, sf::RenderStates states ) const
+    DrawChildren( gfx_core::Window& window, gfx_core::Transform transform ) const
     {
+        // // std::cerr << "DrawChildren() from widget " << typeid( *this ).name() << std::endl;
+
+        transform.translate( GetPos() );
+
         for ( const auto& child : childern_ )
         {
-            target.draw( *child, states );
+            window.draw( *child, transform );
         }
     }
 
   protected:
-    sf::RectangleShape rect_;
+    gfx_core::RectangleShape rect_;
 
-    sf::Vector2f pos_;
-    sf::Vector2f size_;
-
-    Widget* parent_;
+    Widget* parent_{ nullptr };
 
     std::vector<std::unique_ptr<Widget>> childern_;
 };

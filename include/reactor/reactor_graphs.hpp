@@ -3,15 +3,13 @@
 #include "gui/widget.hpp"
 #include "reactor/graph.hpp"
 #include "config.hpp"
-#include <SFML/System/Vector2.hpp>
-#include <SFML/System/Vector3.hpp>
 #include <cstdio>
 
 namespace reactor {
 
 class ReactorGraphs : public gui::Widget {
   public:
-    ReactorGraphs( sf::Vector2f pos, sf::Vector2f size )
+    ReactorGraphs( gfx_core::Vector2f pos, gfx_core::Vector2f size )
         : ReactorGraphs( pos.x, pos.y, size.x, size.y ) {};
 
     ReactorGraphs( float x, float y, float w, float h ) : gui::Widget( x, y, w, h )
