@@ -1,34 +1,21 @@
-cmake_minimum_required(VERSION 3.16)
-project(sphere-rendering LANGUAGES CXX)
+cmake_minimum_required( VERSION 3.16 )
+project( reactor LANGUAGES CXX )
 
-set(CMAKE_CXX_STANDARD 17)
-set(CMAKE_CXX_STANDARD_REQUIRED ON)
-set(CMAKE_EXPORT_COMPILE_COMMANDS ON)
+set( CMAKE_CXX_STANDARD 17 )
+set( CMAKE_CXX_STANDARD_REQUIRED ON )
+set( CMAKE_EXPORT_COMPILE_COMMANDS ON )
 
-find_package(PkgConfig REQUIRED)
-pkg_check_modules(SFML REQUIRED IMPORTED_TARGET sfml-graphics sfml-window sfml-system)
+file( GLOB_RECURSE REACTOR_SOURCES CONFIGURE_DEPENDS
+	${CMAKE_CURRENT_SOURCE_DIR}/source/reactor/*.cpp
+)
 
-set(SOURCE_DIR source)
-set(INCLUDE_DIR include)
-set(GFX_CORE_SRC gfx_core/source)
-set(GFX_CORE_INC gfx_core/include)
+add_executable( reactor ${REACTOR_SOURCES} )
+target_include_directories( reactor PRIVATE
+	${CMAKE_CURRENT_SOURCE_DIR}/include
+)
 
-file( GLOB_RECURSE SOURCE_FILES ${SOURCE_DIR}/*.cpp
-								${SOURCE_DIR}/**/*.cpp
-								${GFX_CORE_SRC}/*.cpp
-								${GFX_CORE_SRC}/**/*.cpp )
-
-add_executable(chemical-reaction ${SOURCE_FILES})
-
-target_include_directories(chemical-reaction PRIVATE ${INCLUDE_DIR} ${GFX_CORE_INC})
+add_subdirectory( gfxlib )
+target_link_libraries(reactor PRIVATE gfx)
 
 set(CMAKE_INSTALL_PREFIX "${CMAKE_SOURCE_DIR}")
-
-target_link_libraries(chemical-reaction PRIVATE PkgConfig::SFML)
-
-find_package(OpenMP REQUIRED)
-target_link_libraries(chemical-reaction PRIVATE OpenMP::OpenMP_CXX)
-
-target_include_directories(chemical-reaction PRIVATE src)
-
-install(TARGETS chemical-reaction DESTINATION bin)
+install(TARGETS reactor DESTINATION bin)

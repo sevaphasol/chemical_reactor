@@ -1,3 +1,3 @@
 #!/bin/bash
 
-./bin/chemical-reaction
+./bin/reactor
