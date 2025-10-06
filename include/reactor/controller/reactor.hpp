@@ -1,6 +1,7 @@
 #pragma once
 
 #include "reactor/model/reactor.hpp"
+#include "reactor/view/buttons.hpp"
 
 namespace reactor {
 namespace controller {

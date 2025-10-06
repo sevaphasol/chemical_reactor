@@ -45,7 +45,12 @@ class Molecule {
     checkCollision( const Molecule& mol1, const Molecule& mol2 );
 
   protected:
-    double r_, x_, y_, vx_, vy_, m_;
+    double r_  = 0.0;
+    double x_  = 0.0;
+    double y_  = 0.0;
+    double vx_ = 0.0;
+    double vy_ = 0.0;
+    double m_  = 0.0;
 };
 
 class CircleMolecule : public Molecule {

@@ -1,15 +1,24 @@
 #include "reactor/config.hpp"
 #include "reactor/model/reactor.hpp"
+#include "reactor/controller/reactor.hpp"
 #include "reactor/model/molecule.hpp"
 
 #include <functional>
+#include <memory>
 #include <random>
 #include <sys/types.h>
 
 namespace reactor {
 namespace model {
 
-Reactor::Reactor( double w, double h ) : w_( w ), h_( h ) {}
+Reactor::Reactor( double w, double h ) : w_( w ), h_( h ), piston_pos_( w )
+{
+    controller::Reactor controller( *this );
+    for ( int i = 0; i < 100; i++ )
+    {
+        controller.onAddMolecule();
+    }
+}
 
 double
 Reactor::getW() const
@@ -138,7 +147,21 @@ Reactor::handleWallCollisions()
 void
 Reactor::handleMoleculesCollisions()
 {
+    remove_indexes_.clear();
+    new_molecules_.clear();
+
     size_t n_molecules = molecules_.size();
+
+    for ( size_t i = 0; i < n_molecules - 1; ++i )
+    {
+        for ( size_t j = i + 1; j < n_molecules; ++j )
+        {
+            if ( collide( i, j ) )
+            {
+                break;
+            }
+        }
+    }
 
     if ( n_molecules == 0 )
     {
@@ -166,14 +189,14 @@ Reactor::handleMoleculesCollisions()
 bool
 Reactor::collide( size_t mol1_idx, size_t mol2_idx )
 {
-    remove_indexes_.push_back( mol1_idx );
-    remove_indexes_.push_back( mol2_idx );
-
     Molecule& mol1 = *molecules_[mol1_idx];
     Molecule& mol2 = *molecules_[mol2_idx];
 
     if ( Molecule::checkCollision( mol1, mol2 ) )
     {
+        remove_indexes_.push_back( mol1_idx );
+        remove_indexes_.push_back( mol2_idx );
+
         collide( mol1, mol2 );
 
         return true;

@@ -17,8 +17,6 @@ class Reactor : public gfx::ui::Widget {
     virtual ~Reactor() = default;
 
     void
-    update() override;
-    void
     onIdle( const gfx::core::Event& event ) override;
 
   private:

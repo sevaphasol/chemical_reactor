@@ -67,9 +67,9 @@ class Reactor {
     std::vector<size_t>                    remove_indexes_;
 
     double elapsed_time_ = 0.0;
-    double w_;
-    double h_;
-    double piston_pos_;
+    double w_            = 0.0;
+    double h_            = 0.0;
+    double piston_pos_   = 0.0;
 };
 
 } // namespace model
