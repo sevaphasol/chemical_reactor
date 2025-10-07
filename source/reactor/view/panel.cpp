@@ -14,6 +14,8 @@ namespace view {
 
 Panel::Panel( controller::Reactor& controller ) : controller_( controller )
 {
+    setDraggable( true );
+
     setPosition( config::Reactor::Panel::Position );
     setSize( config::Reactor::Panel::Size );
 
