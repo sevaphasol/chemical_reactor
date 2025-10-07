@@ -7,15 +7,15 @@
 namespace reactor {
 namespace controller {
 
-Reactor::Reactor( model::Reactor& model ) : model_ref_( model ) {}
+Reactor::Reactor( model::Reactor& model ) : model_( model ) {}
 
 void
 Reactor::onAddMolecule()
 {
     static std::random_device                     rd;
     static std::mt19937                           gen( rd() );
-    static std::uniform_real_distribution<double> dis_pos_x( 0.0, model_ref_.getW() * 0.8 );
-    static std::uniform_real_distribution<double> dis_pos_y( 0.0, model_ref_.getH() );
+    static std::uniform_real_distribution<double> dis_pos_x( 0.0, model_.getW() * 0.8 );
+    static std::uniform_real_distribution<double> dis_pos_y( 0.0, model_.getH() );
     static std::uniform_real_distribution<double> dis_vel( -100.0, 100.0 );
 
     double x  = dis_pos_x( gen );
@@ -23,28 +23,28 @@ Reactor::onAddMolecule()
     double vx = dis_vel( gen );
     double vy = dis_vel( gen );
 
-    model_ref_.addMolecule( std::make_unique<model::CircleMolecule>( 5.0, x, y, vx, vy, 1.0 ) );
+    model_.addMolecule( std::make_unique<model::CircleMolecule>( 5.0, x, y, vx, vy, 1.0 ) );
 }
 
 void
 Reactor::onRemoveMolecule()
 {
-    if ( model_ref_.getMoleculesCount() > 0 )
+    if ( model_.getMoleculesCount() > 0 )
     {
-        model_ref_.removeMolecule( model_ref_.getMoleculesCount() - 1 );
+        model_.removeMolecule( model_.getMoleculesCount() - 1 );
     }
 }
 
 void
 Reactor::onMovePistonLeft()
 {
-    model_ref_.movePiston( -config::Reactor::Panel::Buttons::MovePiston::MoveDistance );
+    model_.movePiston( -config::Reactor::ButtonPanel::Buttons::MovePiston::MoveDistance );
 }
 
 void
 Reactor::onMovePistonRight()
 {
-    model_ref_.movePiston( config::Reactor::Panel::Buttons::MovePiston::MoveDistance );
+    model_.movePiston( config::Reactor::ButtonPanel::Buttons::MovePiston::MoveDistance );
 }
 
 } // namespace controller

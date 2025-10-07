@@ -5,6 +5,7 @@
 #include "gfx/core/rectangle_shape.hpp"
 #include "gfx/core/vector2.hpp"
 #include "gfx/ui/widget.hpp"
+#include <memory>
 
 namespace reactor {
 
@@ -16,9 +17,9 @@ class Reactor;
 
 namespace view {
 
-class Panel : public gfx::ui::Widget {
+class ButtonPanel : public gfx::ui::Widget {
   public:
-    explicit Panel( controller::Reactor& controller );
+    explicit ButtonPanel( std::unique_ptr<controller::Reactor> controller );
 
     virtual bool
     onIdleSelf( const gfx::core::Event::IdleEvent& event ) override;
@@ -44,7 +45,7 @@ class Panel : public gfx::ui::Widget {
     drawSelf( gfx::core::Window& window, gfx::core::Transform transform ) const override;
 
   private:
-    controller::Reactor& controller_;
+    std::unique_ptr<controller::Reactor>( controller_ );
 
     gfx::core::RectangleShape border_;
 

@@ -12,7 +12,7 @@ class Button : public gfx::ui::Widget {
   public:
     explicit Button(
         const gfx::core::Vector2f& pos  = { 0, 0 },
-        const gfx::core::Vector2f& size = config::Reactor::Panel::Common::Parameters::Size );
+        const gfx::core::Vector2f& size = config::Reactor::ButtonPanel::Common::Parameters::Size );
 
     void
     setRelPos( const gfx::core::Vector2f& pos ) override;

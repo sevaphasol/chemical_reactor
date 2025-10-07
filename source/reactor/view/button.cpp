@@ -10,10 +10,10 @@ namespace view {
 
 Button::Button( const gfx::core::Vector2f& pos, const gfx::core::Vector2f& size )
     : Widget( pos, size ), background_( size ),
-      label_( "", gfx::core::Font(), config::Reactor::Panel::Common::Font::Size )
+      label_( "", gfx::core::Font(), config::Reactor::ButtonPanel::Common::Font::Size )
 {
-    background_.setFillColor( config::Reactor::Panel::Common::Parameters::Color::Default );
-    label_.setFillColor( config::Reactor::Panel::Common::Font::Color );
+    background_.setFillColor( config::Reactor::ButtonPanel::Common::Parameters::Color::Default );
+    label_.setFillColor( config::Reactor::ButtonPanel::Common::Font::Color );
     label_.moveInCenterOfRect( size );
     updateVisuals();
 }
@@ -99,13 +99,15 @@ Button::updateVisuals()
 {
     if ( is_pressed_ )
     {
-        background_.setFillColor( config::Reactor::Panel::Common::Parameters::Color::Pressed );
+        background_.setFillColor(
+            config::Reactor::ButtonPanel::Common::Parameters::Color::Pressed );
     } else if ( isHoveredSelf() )
     {
-        background_.setFillColor( config::Reactor::Panel::Common::Parameters::Color::Hover );
+        background_.setFillColor( config::Reactor::ButtonPanel::Common::Parameters::Color::Hover );
     } else
     {
-        background_.setFillColor( config::Reactor::Panel::Common::Parameters::Color::Default );
+        background_.setFillColor(
+            config::Reactor::ButtonPanel::Common::Parameters::Color::Default );
     }
 }
 

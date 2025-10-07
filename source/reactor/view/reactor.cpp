@@ -4,16 +4,19 @@
 #include "gfx/core/event.hpp"
 #include "gfx/core/window.hpp"
 #include "reactor/config.hpp"
+#include "reactor/controller/graph_panel.hpp"
 #include "reactor/model/reactor.hpp"
-#include "reactor/view/panel.hpp"
+#include "reactor/view/graph_panel.hpp"
+#include "reactor/view/button_panel.hpp"
 #include "reactor/view/molecule.hpp"
+#include "reactor/controller/reactor.hpp"
 #include <memory>
 
 namespace reactor {
 namespace view {
 
-Reactor::Reactor( model::Reactor& model, controller::Reactor& controller )
-    : model_( model ), controller_( controller )
+Reactor::Reactor()
+    : model_( config::Reactor::Size.x, config::Reactor::Size.y ), graph_controller_( graph_model_ )
 {
     setPosition( gfx::core::Vector2f( config::Reactor::Position.x, config::Reactor::Position.y ) );
     setSize( gfx::core::Vector2f( model_.getW(), model_.getH() ) );
@@ -23,7 +26,8 @@ Reactor::Reactor( model::Reactor& model, controller::Reactor& controller )
     border_.setOutlineColor( gfx::core::Color::Red );
     border_.setOutlineThickness( 2.0f );
 
-    addChild( std::make_unique<Panel>( controller_ ) );
+    addChild( std::make_unique<GraphPanel>( graph_model_ ) );
+    addChild( std::make_unique<ButtonPanel>( std::make_unique<controller::Reactor>( model_ ) ) );
 }
 
 bool
@@ -39,10 +43,14 @@ Reactor::onIdleSelf( const gfx::core::Event::IdleEvent& event )
 
     for ( const auto& model_mol : molecules_ref )
     {
-        molecule_views_.push_back( std::make_unique<Molecule>( *model_mol ) );
+        molecule_views_.push_back( std::make_unique<view::Molecule>( *model_mol ) );
     }
 
     border_.setSize( gfx::core::Vector2f( model_.getPistonPos(), model_.getH() ) );
+
+    graph_controller_.update( event.delta_time,
+                              model_.getTotalEnergy(),
+                              model_.getMoleculesCount() );
 
     return false;
 }

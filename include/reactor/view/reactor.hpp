@@ -2,7 +2,8 @@
 
 #include "gfx/ui/widget.hpp"
 
-#include "reactor/controller/reactor.hpp"
+#include "reactor/controller/graph_panel.hpp"
+#include "reactor/model/graph.hpp"
 #include "reactor/model/reactor.hpp"
 #include "reactor/view/molecule.hpp"
 
@@ -14,7 +15,7 @@ namespace view {
 
 class Reactor : public gfx::ui::Widget {
   public:
-    explicit Reactor( model::Reactor& model, controller::Reactor& controller );
+    explicit Reactor();
     virtual ~Reactor() = default;
 
     virtual bool
@@ -25,8 +26,9 @@ class Reactor : public gfx::ui::Widget {
     drawSelf( gfx::core::Window& window, gfx::core::Transform transform ) const override;
 
   private:
-    model::Reactor&                        model_;
-    controller::Reactor&                   controller_;
+    model::Reactor                         model_;
+    model::GraphPanel                      graph_model_;
+    controller::GraphPanel                 graph_controller_;
     std::vector<std::unique_ptr<Molecule>> molecule_views_;
     gfx::core::RectangleShape              border_;
 };

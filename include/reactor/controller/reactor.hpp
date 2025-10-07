@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reactor/model/reactor.hpp"
-#include "reactor/view/panel.hpp"
+#include "reactor/view/button_panel.hpp"
 
 namespace reactor {
 namespace controller {
@@ -21,7 +21,7 @@ class Reactor {
     onMovePistonRight();
 
   private:
-    model::Reactor& model_ref_;
+    model::Reactor& model_;
 };
 
 } // namespace controller
