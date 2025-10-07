@@ -1,7 +1,7 @@
 #pragma once
 
 #include "reactor/model/reactor.hpp"
-#include "reactor/view/buttons.hpp"
+#include "reactor/view/panel.hpp"
 
 namespace reactor {
 namespace controller {

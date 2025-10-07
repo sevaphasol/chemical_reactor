@@ -2,10 +2,9 @@
 
 #include "gfx/core/event.hpp"
 #include "gfx/core/font.hpp"
+#include "gfx/core/rectangle_shape.hpp"
 #include "gfx/core/vector2.hpp"
 #include "gfx/ui/widget.hpp"
-
-#include "reactor/view/button.hpp"
 
 namespace reactor {
 
@@ -17,12 +16,12 @@ class Reactor;
 
 namespace view {
 
-class ReactorButtons : public gfx::ui::Widget {
+class Panel : public gfx::ui::Widget {
   public:
-    explicit ReactorButtons( gfx::core::Vector2f pos, gfx::core::Vector2f size );
+    explicit Panel( controller::Reactor& controller );
 
-    virtual void
-    onIdle( const gfx::core::Event& event ) override;
+    virtual bool
+    onIdleSelf( const gfx::core::Event::IdleEvent& event ) override;
 
   private:
     enum ButtonCode {
@@ -41,8 +40,13 @@ class ReactorButtons : public gfx::ui::Widget {
     void
     setupButton( const gfx::core::Vector2f& pos, const char* label );
 
+    virtual void
+    drawSelf( gfx::core::Window& window, gfx::core::Transform transform ) const override;
+
   private:
-    controller::Reactor* controller_;
+    controller::Reactor& controller_;
+
+    gfx::core::RectangleShape border_;
 
     gfx::core::Font labels_font_;
 };

@@ -5,34 +5,34 @@
 #include "gfx/core/window.hpp"
 #include "reactor/config.hpp"
 #include "reactor/model/reactor.hpp"
-#include "reactor/view/buttons.hpp"
+#include "reactor/view/panel.hpp"
 #include "reactor/view/molecule.hpp"
 #include <memory>
 
 namespace reactor {
 namespace view {
 
-Reactor::Reactor( model::Reactor& model ) : model_ref_( model )
+Reactor::Reactor( model::Reactor& model, controller::Reactor& controller )
+    : model_( model ), controller_( controller )
 {
     setPosition( gfx::core::Vector2f( config::Reactor::Position.x, config::Reactor::Position.y ) );
-    setSize( gfx::core::Vector2f( model_ref_.getW(), model_ref_.getH() ) );
+    setSize( gfx::core::Vector2f( model_.getW(), model_.getH() ) );
 
     border_.setSize( getSize() );
     border_.setFillColor( gfx::core::Color::Transparent );
     border_.setOutlineColor( gfx::core::Color::Red );
     border_.setOutlineThickness( 2.0f );
 
-    addChild( std::make_unique<ReactorButtons>( config::Reactor::Buttons::Position,
-                                                config::Reactor::Buttons::Size ) );
+    addChild( std::make_unique<Panel>( controller_ ) );
 }
 
-void
-Reactor::onIdle( const gfx::core::Event& event )
+bool
+Reactor::onIdleSelf( const gfx::core::Event::IdleEvent& event )
 {
-    model_ref_.update( event.idle.delta_time );
+    model_.update( event.delta_time );
 
-    const auto&  molecules_ref = model_ref_.getMolecules();
-    const size_t molecule_size = model_ref_.getMoleculesCount();
+    const auto&  molecules_ref = model_.getMolecules();
+    const size_t molecule_size = model_.getMoleculesCount();
 
     molecule_views_.clear();
     molecule_views_.reserve( molecule_size );
@@ -42,13 +42,16 @@ Reactor::onIdle( const gfx::core::Event& event )
         molecule_views_.push_back( std::make_unique<Molecule>( *model_mol ) );
     }
 
-    border_.setSize( gfx::core::Vector2f( model_ref_.getPistonPos(), model_ref_.getH() ) );
+    border_.setSize( gfx::core::Vector2f( model_.getPistonPos(), model_.getH() ) );
+
+    return false;
 }
 
 void
 Reactor::drawSelf( gfx::core::Window& window, gfx::core::Transform transform ) const
 {
     window.draw( border_, transform );
+
     for ( const auto& mol_view : molecule_views_ )
     {
         mol_view->draw( window, transform );

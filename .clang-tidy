@@ -28,7 +28,7 @@ CheckOptions:
   - { key: readability-identifier-naming.GlobalConstantCase,      value: CamelCase  }
   - { key: readability-identifier-naming.StaticConstantCase,      value: CamelCase  }
   - { key: readability-identifier-naming.TemplateParameterCase,   value: CamelCase  }
-  - { key: readability-identifier-naming.EnumConstantCase,        value: UPPER_CASE }
+  - { key: readability-identifier-naming.EnumConstantCase,        value: PascalCase }
   - { key: readability-identifier-naming.MacroDefinitionCase,     value: UPPER_CASE }
 
 

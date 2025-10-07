@@ -38,13 +38,13 @@ Reactor::onRemoveMolecule()
 void
 Reactor::onMovePistonLeft()
 {
-    model_ref_.movePiston( -config::Reactor::Buttons::Specialization::MovePiston::MoveDistance );
+    model_ref_.movePiston( -config::Reactor::Panel::Buttons::MovePiston::MoveDistance );
 }
 
 void
 Reactor::onMovePistonRight()
 {
-    model_ref_.movePiston( config::Reactor::Buttons::Specialization::MovePiston::MoveDistance );
+    model_ref_.movePiston( config::Reactor::Panel::Buttons::MovePiston::MoveDistance );
 }
 
 } // namespace controller

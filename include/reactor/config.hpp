@@ -17,8 +17,8 @@ struct Common
 
 struct Reactor
 {
-    static inline const gfx::core::Vector2f Position        = { 10.0f, 10.0f };
-    static inline const gfx::core::Vector2f Size            = { 600.0f, 400.0f };
+    static inline const gfx::core::Vector2f Position        = { 50.0f, 50.0f };
+    static inline const gfx::core::Vector2f Size            = { 625.0f, 400.0f };
     static inline const gfx::core::Color    BackGroundColor = { 100, 100, 100 };
 
     struct Window
@@ -28,10 +28,10 @@ struct Reactor
         static constexpr const char* const Title  = "SphereRendering";
     };
 
-    struct Buttons
+    struct Panel
     {
         static inline const gfx::core::Vector2f Position = { 100.0f, 475.0f };
-        static inline const gfx::core::Vector2f Size     = { 600.0f, 300.0f };
+        static inline const gfx::core::Vector2f Size     = { 420.0f, 225.0f };
 
         struct Common
         {
@@ -48,14 +48,14 @@ struct Reactor
 
                 struct Color
                 {
-                    static inline const gfx::core::Color Default = { 100, 100, 100 };
-                    static inline const gfx::core::Color Hover   = { 150, 100, 100 };
-                    static inline const gfx::core::Color Pressed = { 200, 100, 100 };
+                    static inline const gfx::core::Color Default = { 100, 150, 100 };
+                    static inline const gfx::core::Color Hover   = { 100, 200, 100 };
+                    static inline const gfx::core::Color Pressed = { 100, 250, 100 };
                 };
             };
         };
 
-        struct Specialization
+        struct Buttons
         {
             struct AddMolecule
             {
@@ -69,7 +69,7 @@ struct Reactor
 
             struct MovePiston
             {
-                static constexpr float MoveDistance = 10.0f;
+                static constexpr float MoveDistance = 1.0f;
 
                 struct Left
                 {
@@ -148,7 +148,7 @@ struct Reactor
             };
         };
 
-        struct Specialization
+        struct Buttons
         {
             struct Number
             {

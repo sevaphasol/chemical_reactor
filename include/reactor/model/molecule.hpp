@@ -8,7 +8,7 @@ class Molecule {
     Molecule( double r, double x, double y, double vx, double vy, double m );
     virtual ~Molecule() = default;
 
-    enum Type { CIRCLE, SQUARE, COUNT };
+    enum Type { Circle, Square, Count };
 
     void
     move( double dt );
@@ -64,7 +64,7 @@ class CircleMolecule : public Molecule {
     Molecule::Type
     getType() const override
     {
-        return Type::CIRCLE;
+        return Type::Circle;
     }
 };
 
@@ -79,7 +79,7 @@ class SquareMolecule : public Molecule {
     Molecule::Type
     getType() const override
     {
-        return Type::SQUARE;
+        return Type::Square;
     }
 };
 

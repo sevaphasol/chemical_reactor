@@ -1,6 +1,8 @@
 #include "reactor/view/window_manager.hpp"
 #include "reactor/config.hpp"
+#include "reactor/controller/reactor.hpp"
 #include "reactor/view/reactor.hpp"
+#include <memory>
 
 namespace reactor {
 namespace view {
@@ -11,7 +13,7 @@ WindowManager::WindowManager( float w, float h, const char* title )
 {
     setDeltaTime( config::Reactor::Physics::DeltaTime );
 
-    desktop_.addChild( std::make_unique<reactor::view::Reactor>( model_ ) );
+    desktop_.addChild( std::make_unique<view::Reactor>( model_, controller_ ) );
 }
 
 } // namespace view

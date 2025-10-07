@@ -70,7 +70,12 @@ Reactor::removeMolecule( size_t index )
 void
 Reactor::movePiston( double dist )
 {
-    piston_pos_ += dist;
+    double new_piston_pos = piston_pos_ + dist;
+
+    if ( w_ * 0.1 <= new_piston_pos && new_piston_pos <= w_ )
+    {
+        piston_pos_ = new_piston_pos;
+    }
 }
 
 size_t
@@ -118,10 +123,10 @@ Reactor::handleWallCollisions()
         double vx = mol->getVx();
         double vy = mol->getVy();
 
-        if ( x + 2 * r > w_ )
+        if ( x + 2 * r > piston_pos_ )
         {
             mol->setVx( -vx );
-            mol->setX( w_ - 2 * r );
+            mol->setX( piston_pos_ - 2 * r );
         }
 
         if ( x < 0 )
@@ -151,6 +156,11 @@ Reactor::handleMoleculesCollisions()
     new_molecules_.clear();
 
     size_t n_molecules = molecules_.size();
+
+    if ( n_molecules == 0 )
+    {
+        return;
+    }
 
     for ( size_t i = 0; i < n_molecules - 1; ++i )
     {
@@ -210,7 +220,7 @@ Reactor::collide( Molecule& mol1, Molecule& mol2 )
 {
     // clang-format off
     static std::function<void( Reactor&, Molecule&, Molecule& )>
-	vtable[Molecule::Type::COUNT][Molecule::Type::COUNT] =
+	vtable[Molecule::Type::Count][Molecule::Type::Count] =
 		{ &Reactor::collideCircleCircle, &Reactor::collideCircleSquare,
 		  &Reactor::collideSquareCircle, &Reactor::collideSquareSquare };
     // clang-format on

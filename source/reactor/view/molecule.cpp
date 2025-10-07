@@ -11,11 +11,11 @@ Molecule::Molecule( const model::Molecule& model )
     : model_ref_( model ), circle_shape_( model.getR() ),
       rect_shape_( gfx::core::Vector2f( model.getR() * 2, model.getR() * 2 ) )
 {
-    if ( model.getType() == model::Molecule::CIRCLE )
+    if ( model.getType() == model::Molecule::Circle )
     {
         circle_shape_.setFillColor( config::Reactor::Physics::Molecule::Circle::Color );
         current_shape_ = &circle_shape_;
-    } else
+    } else if ( model.getType() == model::Molecule::Square )
     {
         rect_shape_.setFillColor( config::Reactor::Physics::Molecule::Square::Color );
         current_shape_ = &rect_shape_;
