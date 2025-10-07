@@ -86,8 +86,8 @@ struct Reactor
 
     struct GraphPanel
     {
-        static inline const gfx::core::Vector2f Position = { 700.0f, 0.0f };
-        static inline const gfx::core::Vector2f Size     = { 400.0f, 700.0f };
+        static inline const gfx::core::Vector2f Position = { 680.0f, 0.0f };
+        static inline const gfx::core::Vector2f Size     = { 420.0f, 700.0f };
 
         struct Common
         {
@@ -133,7 +133,7 @@ struct Reactor
                     struct Padding
                     {
                         static inline const gfx::core::Vector2f Horizontal = { 8.5f, 10.0f };
-                        static inline const gfx::core::Vector2f Vertical   = { 60.0f, 8.5f };
+                        static inline const gfx::core::Vector2f Vertical   = { 70.0f, 8.5f };
                     };
                 };
             };
@@ -143,19 +143,19 @@ struct Reactor
         {
             struct Number
             {
-                static inline const gfx::core::Vector2f Position = { 25.0f, 20.0f };
+                static inline const gfx::core::Vector2f Position = { 85.0f, 40.0f };
             };
 
             struct Energy
             {
-                static inline const gfx::core::Vector2f Position = { 25.0f, 180.0f };
+                static inline const gfx::core::Vector2f Position = { 85.0f, 380.0f };
             };
         };
     };
 
     struct Physics
     {
-        static constexpr double DeltaTime       = 0.02f;
+        static constexpr double DeltaTime       = 0.002f;
         static constexpr float  SpeedVelocity   = 3000;
         static constexpr float  SpeedVelocitySq = SpeedVelocity * SpeedVelocity;
 

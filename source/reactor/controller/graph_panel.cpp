@@ -11,7 +11,7 @@ GraphPanel::update( double delta_time, double energy, double number )
     static float time = 0.0f;
 
     model_.updateEnergyGraph( time, energy );
-    model_.updateEnergyGraph( time, number );
+    model_.updateNumberGraph( time, number );
 
     time += delta_time;
 }

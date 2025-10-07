@@ -5,9 +5,9 @@
 #include "reactor/config.hpp"
 #include "reactor/model/graph.hpp"
 
+#include <ios>
 #include <sstream>
 #include <iomanip>
-#include <iostream>
 
 namespace reactor {
 namespace view {
@@ -54,8 +54,6 @@ Graph::updateFromModel()
 
     plot_ = gfx::core::VertexArray( gfx::core::PrimitiveType::LineStrip, points.size() );
 
-    std::cerr << "points_size = " << points_size << std::endl;
-
     for ( size_t i = 0; i < points_size; ++i )
     {
         plot_[i].position = { logicalToScreenX( points[i].x ), logicalToScreenY( points[i].y ) };
@@ -86,13 +84,13 @@ Graph::recalculateSteps()
 float
 Graph::logicalToScreenX( float x ) const
 {
-    return getRelPos().x + ( x - model_.getMinBounds().x ) * step_.x;
+    return ( x - model_.getMinBounds().x ) * step_.x;
 }
 
 float
 Graph::logicalToScreenY( float y ) const
 {
-    return getRelPos().y + getSize().y - ( y - model_.getMinBounds().y ) * step_.y;
+    return getSize().y - ( y - model_.getMinBounds().y ) * step_.y;
 }
 
 void
@@ -116,9 +114,9 @@ Graph::drawGridLines( gfx::core::Window& window, gfx::core::Transform transform 
 
     int divs = config::Reactor::GraphPanel::Common::Parameters::GridDivs;
 
-    float x_min = getRelPos().x;
+    float x_min = 0;
     float x_max = x_min + getSize().x;
-    float y_min = getRelPos().y;
+    float y_min = 0;
     float y_max = y_min + getSize().y;
 
     for ( int i = 0; i <= divs; ++i )
@@ -155,15 +153,9 @@ Graph::drawAxisLabels( gfx::core::Window& window, gfx::core::Transform transform
         float val_y = min_bounds.y + t * ( max_bounds.y - min_bounds.y );
 
         std::ostringstream oss;
-        oss << std::fixed << std::setprecision( 2 ) << val_x;
+        oss << std::setw( 2 ) << std::setprecision( 2 ) << std::scientific << val_y;
         axis_labels_text_.setString( oss.str() );
-        axis_labels_text_.setPosition( logicalToScreenX( val_x ) - hor_pad.x, hor_pad.y );
-        window.draw( axis_labels_text_, transform );
-
-        oss.str( "" );
-        oss << std::fixed << std::setprecision( 2 ) << val_y;
-        axis_labels_text_.setString( oss.str() );
-        axis_labels_text_.setPosition( ver_pad.x, logicalToScreenY( val_y ) - ver_pad.y );
+        axis_labels_text_.setPosition( -ver_pad.x, logicalToScreenY( val_y ) - ver_pad.y );
         window.draw( axis_labels_text_, transform );
     }
 }
@@ -172,9 +164,8 @@ void
 Graph::updateTitlePosition()
 {
     auto bounds = title_text_.getGlobalBounds();
-    title_text_.setPosition(
-        getRelPos().x + getSize().x / 2.0f - bounds.w / 2.0f,
-        getRelPos().y - config::Reactor::GraphPanel::Common::Parameters::Title::Padding::Y );
+    title_text_.setPosition( getSize().x / 2.0f - bounds.w / 2.0f,
+                             -config::Reactor::GraphPanel::Common::Parameters::Title::Padding::Y );
 }
 
 } // namespace view

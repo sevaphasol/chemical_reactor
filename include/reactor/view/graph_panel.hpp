@@ -11,9 +11,6 @@ class GraphPanel : public gfx::ui::Widget {
   public:
     explicit GraphPanel( model::GraphPanel& model );
 
-    virtual bool
-    onIdleSelf( const gfx::core::Event::IdleEvent& event ) override;
-
   private:
     enum GraphCode {
         Energy = 0,

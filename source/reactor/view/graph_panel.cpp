@@ -30,15 +30,6 @@ GraphPanel::GraphPanel( model::GraphPanel& model ) : model_( model )
                 "Number" );
 }
 
-bool
-GraphPanel::onIdleSelf( const gfx::core::Event::IdleEvent& event )
-{
-    children_[Energy]->onIdle( event );
-    children_[Number]->onIdle( event );
-
-    return false;
-}
-
 void
 GraphPanel::setupGraph( model::Graph& model, const gfx::core::Vector2f& pos, const char* title )
 {
