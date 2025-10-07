@@ -14,7 +14,7 @@ namespace model {
 Reactor::Reactor( double w, double h ) : w_( w ), h_( h ), piston_pos_( w )
 {
     controller::Reactor controller( *this );
-    for ( int i = 0; i < 100; i++ )
+    for ( int i = 0; i < config::Reactor::Physics::Molecule::StartMoleculesCount; i++ )
     {
         controller.onAddMolecule();
     }

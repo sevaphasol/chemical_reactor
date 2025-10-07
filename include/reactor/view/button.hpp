@@ -1,5 +1,6 @@
 #pragma once
 
+#include "gfx/core/font.hpp"
 #include "gfx/ui/widget.hpp"
 #include "gfx/core/rectangle_shape.hpp"
 #include "gfx/core/text.hpp"
@@ -45,6 +46,7 @@ class Button : public gfx::ui::Widget {
 
     bool                      is_pressed_ = false;
     gfx::core::RectangleShape background_;
+    gfx::core::Font           font_;
     gfx::core::Text           label_;
 };
 

@@ -25,7 +25,7 @@ struct Reactor
     {
         static constexpr uint              Width  = 1200.0f;
         static constexpr uint              Height = 800.0f;
-        static constexpr const char* const Title  = "SphereRendering";
+        static constexpr const char* const Title  = "Reactor";
     };
 
     struct ButtonPanel
@@ -155,13 +155,14 @@ struct Reactor
 
     struct Physics
     {
-        static constexpr double DeltaTime       = 0.002f;
+        static constexpr double DeltaTime       = 0.01f;
         static constexpr float  SpeedVelocity   = 3000;
         static constexpr float  SpeedVelocitySq = SpeedVelocity * SpeedVelocity;
 
         struct Molecule
         {
-            static constexpr float StartVelocityMax = 1000;
+            static constexpr float StartVelocityMax    = 1000;
+            static constexpr float StartMoleculesCount = 100;
 
             struct Circle
             {

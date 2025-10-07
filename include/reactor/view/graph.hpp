@@ -46,8 +46,6 @@ class Graph : public gfx::ui::Widget {
 
     gfx::core::Vector2f    step_{ 1, 1 };
     gfx::core::VertexArray plot_;
-
-    bool needs_update_ = true;
 };
 
 } // namespace view

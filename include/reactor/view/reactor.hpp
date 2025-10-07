@@ -3,7 +3,6 @@
 #include "gfx/ui/widget.hpp"
 
 #include "reactor/controller/graph_panel.hpp"
-#include "reactor/model/graph.hpp"
 #include "reactor/model/reactor.hpp"
 #include "reactor/view/molecule.hpp"
 

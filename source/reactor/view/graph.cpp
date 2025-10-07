@@ -35,11 +35,7 @@ Graph::Graph( model::Graph&              model,
 bool
 Graph::onIdleSelf( const gfx::core::Event::IdleEvent& event )
 {
-    // if ( needs_update_ )
-    // {
     updateFromModel();
-    // needs_update_ = false;
-    // }
 
     return false;
 }

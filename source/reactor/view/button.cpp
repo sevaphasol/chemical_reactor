@@ -10,7 +10,7 @@ namespace view {
 
 Button::Button( const gfx::core::Vector2f& pos, const gfx::core::Vector2f& size )
     : Widget( pos, size ), background_( size ),
-      label_( "", gfx::core::Font(), config::Reactor::ButtonPanel::Common::Font::Size )
+      label_( "", font_, config::Reactor::ButtonPanel::Common::Font::Size )
 {
     background_.setFillColor( config::Reactor::ButtonPanel::Common::Parameters::Color::Default );
     label_.setFillColor( config::Reactor::ButtonPanel::Common::Font::Color );
@@ -89,6 +89,11 @@ bool
 Button::onMouseMoveSelf( const gfx::core::Event::MouseMoveEvent& event )
 {
     is_hovered_self_ = pointInside( gfx::core::Vector2f( event.x, event.y ) );
+
+    if ( !is_hovered_self_ )
+    {
+        is_pressed_ = false;
+    }
 
     updateVisuals();
     return isHoveredSelf();
