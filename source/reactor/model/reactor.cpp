@@ -68,6 +68,12 @@ Reactor::removeMolecule( size_t index )
 }
 
 void
+Reactor::setWallTemperature( double factor )
+{
+    wall_templ_ = factor * config::Reactor::Physics::MaxWallTemperature;
+}
+
+void
 Reactor::movePiston( double dist )
 {
     double new_piston_pos = piston_pos_ + dist;
@@ -112,38 +118,47 @@ Reactor::moveMolecules( double dt )
     }
 }
 
+double
+Reactor::wallTempAdditionalVelocity( double m ) const
+{
+    return ( 1 + 0.5 * wall_templ_ / m );
+}
+
 void
 Reactor::handleWallCollisions()
 {
     for ( auto& mol : molecules_ )
     {
+        double m  = mol->getM();
         double r  = mol->getR();
         double x  = mol->getX();
         double y  = mol->getY();
         double vx = mol->getVx();
         double vy = mol->getVy();
 
+        double temp_v = wallTempAdditionalVelocity( m );
+
         if ( x + 2 * r > piston_pos_ )
         {
-            mol->setVx( -vx );
+            mol->setVx( -vx - temp_v );
             mol->setX( piston_pos_ - 2 * r );
         }
 
         if ( x < 0 )
         {
-            mol->setVx( -vx );
+            mol->setVx( -vx + temp_v );
             mol->setX( 0 );
         }
 
         if ( y + 2 * r > h_ )
         {
-            mol->setVy( -vy );
+            mol->setVy( -vy - temp_v );
             mol->setY( h_ - 2 * r );
         }
 
         if ( y < 0 )
         {
-            mol->setVy( -vy );
+            mol->setVy( -vy + temp_v );
             mol->setY( 0 );
         }
     }

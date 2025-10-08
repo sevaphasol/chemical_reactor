@@ -30,6 +30,7 @@ class ButtonPanel : public gfx::ui::Widget {
         RmMolecule      = 1,
         MovePistonLeft  = 2,
         MovePistonRight = 3,
+        ScrollBar       = 4,
     };
 
     void
@@ -37,6 +38,9 @@ class ButtonPanel : public gfx::ui::Widget {
 
     bool
     isPressed( ButtonCode code );
+
+    bool
+    isScrolled( ButtonCode code );
 
     void
     setupButton( const gfx::core::Vector2f& pos, const char* label );

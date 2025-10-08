@@ -11,7 +11,6 @@
 #include "reactor/view/button_panel.hpp"
 #include "reactor/view/molecule.hpp"
 #include "reactor/controller/reactor.hpp"
-#include "reactor/view/scroll_bar.hpp"
 #include <memory>
 
 namespace reactor {
@@ -30,8 +29,6 @@ Reactor::Reactor()
 
     addChild( std::make_unique<GraphPanel>( graph_model_ ) );
     addChild( std::make_unique<ButtonPanel>( std::make_unique<controller::Reactor>( model_ ) ) );
-    addChild( std::make_unique<ScrollBar>( gfx::core::Vector2f( 1300.0f, 100.0f ),
-                                           gfx::core::Vector2f( 50.0f, 500.0f ) ) );
 }
 
 bool

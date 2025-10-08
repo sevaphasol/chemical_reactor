@@ -24,15 +24,15 @@ struct Reactor
 
     struct Window
     {
-        static constexpr uint              Width  = 1600.0f;
+        static constexpr uint              Width  = 1200.0f;
         static constexpr uint              Height = 800.0f;
         static constexpr const char* const Title  = "Reactor";
     };
 
     struct ButtonPanel
     {
-        static inline const gfx::core::Vector2f Position = { 100.0f, 475.0f };
-        static inline const gfx::core::Vector2f Size     = { 420.0f, 225.0f };
+        static inline const gfx::core::Vector2f Position = { 50.0f, 475.0f };
+        static inline const gfx::core::Vector2f Size     = { 520.0f, 225.0f };
 
         struct Common
         {
@@ -60,12 +60,12 @@ struct Reactor
         {
             struct AddMolecule
             {
-                static inline const gfx::core::Vector2f Position = { 25.0f, 25.0f };
+                static inline const gfx::core::Vector2f Position = { 50.0f, 25.0f };
             };
 
             struct RemoveMolecule
             {
-                static inline const gfx::core::Vector2f Position = { 225.0f, 25.0f };
+                static inline const gfx::core::Vector2f Position = { 250.0f, 25.0f };
             };
 
             struct MovePiston
@@ -74,12 +74,12 @@ struct Reactor
 
                 struct Left
                 {
-                    static inline const gfx::core::Vector2f Position = { 25.0f, 125.0f };
+                    static inline const gfx::core::Vector2f Position = { 50.0f, 125.0f };
                 };
 
                 struct Right
                 {
-                    static inline const gfx::core::Vector2f Position = { 225.0f, 125.0f };
+                    static inline const gfx::core::Vector2f Position = { 250.0f, 125.0f };
                 };
             };
         };
@@ -156,7 +156,9 @@ struct Reactor
 
     struct ScrollBar
     {
-        static inline const gfx::core::Vector2f Size = { 50.0f, 500.0f };
+        static inline const gfx::core::Vector2f Size = { 25.0f, ButtonPanel::Size.y - 50.0f };
+        static inline const gfx::core::Vector2f Pos  = { ButtonPanel::Size.x - Size.x - 35.0f,
+                                                         25.0f };
 
         struct ArrowField
         {
@@ -217,7 +219,7 @@ struct Reactor
 
         struct Thumb
         {
-            static constexpr float SizeCoef = 0.1;
+            static constexpr float SizeCoef = 0.3;
 
             struct Color
             {
@@ -234,15 +236,16 @@ struct Reactor
 
             static inline const gfx::core::Vector2f StartPos = {
                 0.0f,
-                config::Reactor::ScrollBar::ArrowField::Size.y };
+                config::Reactor::ScrollBar::Size.y * ( 1 - SizeCoef ) - ArrowField::Size.y };
         };
     };
 
     struct Physics
     {
-        static constexpr double DeltaTime       = 0.01f;
-        static constexpr float  SpeedVelocity   = 3000;
-        static constexpr float  SpeedVelocitySq = SpeedVelocity * SpeedVelocity;
+        static constexpr double DeltaTime          = 0.001f;
+        static constexpr double SpeedVelocity      = 3000;
+        static constexpr double SpeedVelocitySq    = SpeedVelocity * SpeedVelocity;
+        static constexpr double MaxWallTemperature = 27300;
 
         struct Molecule
         {

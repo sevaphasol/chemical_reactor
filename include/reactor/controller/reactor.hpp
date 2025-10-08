@@ -19,6 +19,8 @@ class Reactor {
     onMovePistonLeft();
     void
     onMovePistonRight();
+    void
+    onScroll( double scroll_factor );
 
   private:
     model::Reactor& model_;

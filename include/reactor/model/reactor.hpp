@@ -21,6 +21,8 @@ class Reactor {
     void
     removeMolecule( size_t index );
     void
+    setWallTemperature( double factor );
+    void
     movePiston( double dist );
 
     size_t
@@ -36,6 +38,9 @@ class Reactor {
     getH() const;
     double
     getPistonPos() const;
+
+    double
+    wallTempAdditionalVelocity( double m ) const;
 
     const std::vector<std::unique_ptr<Molecule>>&
     getMolecules() const;
@@ -70,6 +75,7 @@ class Reactor {
     double w_            = 0.0;
     double h_            = 0.0;
     double piston_pos_   = 0.0;
+    double wall_templ_   = 0.0;
 };
 
 } // namespace model

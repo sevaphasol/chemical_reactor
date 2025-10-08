@@ -55,5 +55,11 @@ Reactor::onMovePistonRight()
     model_.movePiston( config::Reactor::ButtonPanel::Buttons::MovePiston::MoveDistance );
 }
 
+void
+Reactor::onScroll( double scroll_factor )
+{
+    model_.setWallTemperature( scroll_factor );
+}
+
 } // namespace controller
 } // namespace reactor

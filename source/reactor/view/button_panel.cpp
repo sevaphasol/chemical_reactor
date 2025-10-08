@@ -6,6 +6,7 @@
 #include "reactor/view/button_panel.hpp"
 #include "reactor/controller/reactor.hpp"
 #include "reactor/view/button.hpp"
+#include "reactor/view/scroll_bar.hpp"
 
 #include <memory>
 
@@ -37,6 +38,9 @@ ButtonPanel::ButtonPanel( std::unique_ptr<controller::Reactor>( controller ) )
 
     setupButton( config::Reactor::ButtonPanel::Buttons::MovePiston::Right::Position,
                  "Move piston right" );
+
+    addChild( std::make_unique<view::ScrollBar>( config::Reactor::ScrollBar::Pos,
+                                                 config::Reactor::ScrollBar::Size ) );
 }
 
 bool
@@ -62,6 +66,13 @@ ButtonPanel::onIdleSelf( const gfx::core::Event::IdleEvent& event )
         controller_->onMovePistonRight();
     }
 
+    if ( isScrolled( ButtonCode::ScrollBar ) )
+    {
+        controller_->onScroll(
+            dynamic_cast<view::ScrollBar*>( children_[ButtonCode::ScrollBar].get() )
+                ->getScrollFactor() );
+    }
+
     return false;
 }
 
@@ -75,6 +86,12 @@ bool
 ButtonPanel::isPressed( ButtonCode code )
 {
     return dynamic_cast<Button*>( children_[code].get() )->isPressed();
+}
+
+bool
+ButtonPanel::isScrolled( ButtonCode code )
+{
+    return dynamic_cast<view::ScrollBar*>( children_[code].get() )->isScrolled();
 }
 
 void

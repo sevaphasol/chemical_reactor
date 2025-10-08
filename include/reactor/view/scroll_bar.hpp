@@ -27,6 +27,9 @@ class ScrollBar : public gfx::ui::Widget {
     double
     getScrollFactor() const;
 
+    bool
+    isScrolled();
+
   private:
     void
     updateThumbPosition();
@@ -37,6 +40,8 @@ class ScrollBar : public gfx::ui::Widget {
         UpArrow   = 1,
         DownArrow = 2,
     };
+
+    bool is_scrolled_ = false;
 
     gfx::core::RectangleShape border_;
 
@@ -98,7 +103,7 @@ class Arrow : public gfx::ui::Widget {
     void
     updateTriangleColor( const gfx::core::Color& color );
     void
-    updateTrianglePosition( const gfx::core::Vector2f vertices[3] );
+    updateTrianglePosition();
     void
     updateVisuals();
 
