@@ -25,7 +25,13 @@ Reactor::onAddMolecule()
     double vx = dis_v( gen );
     double vy = dis_v( gen );
 
-    model_.addMolecule( std::make_unique<model::CircleMolecule>( 5.0, x, y, vx, vy, 1.0 ) );
+    model_.addMolecule( std::make_unique<model::CircleMolecule>(
+        config::Reactor::Physics::Molecule::Circle::Radius,
+        x,
+        y,
+        vx,
+        vy,
+        config::Reactor::Physics::Molecule::Circle::Weight ) );
 }
 
 void

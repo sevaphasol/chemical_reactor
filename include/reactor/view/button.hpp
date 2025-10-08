@@ -44,7 +44,6 @@ class Button : public gfx::ui::Widget {
     void
     updateVisuals();
 
-    bool                      is_pressed_ = false;
     gfx::core::RectangleShape background_;
     gfx::core::Font           font_;
     gfx::core::Text           label_;

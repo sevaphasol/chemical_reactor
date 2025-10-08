@@ -2,6 +2,7 @@
 
 #include "gfx/core/color.hpp"
 #include "gfx/core/vector2.hpp"
+#include "gfx/core/vertex.hpp"
 #include <sys/types.h>
 
 namespace config {
@@ -23,7 +24,7 @@ struct Reactor
 
     struct Window
     {
-        static constexpr uint              Width  = 1200.0f;
+        static constexpr uint              Width  = 1600.0f;
         static constexpr uint              Height = 800.0f;
         static constexpr const char* const Title  = "Reactor";
     };
@@ -150,6 +151,90 @@ struct Reactor
             {
                 static inline const gfx::core::Vector2f Position = { 85.0f, 380.0f };
             };
+        };
+    };
+
+    struct ScrollBar
+    {
+        static inline const gfx::core::Vector2f Size = { 50.0f, 500.0f };
+
+        struct ArrowField
+        {
+            static constexpr float SizeCoef = 0.1;
+
+            static inline const gfx::core::Vector2f Size = {
+                config::Reactor::ScrollBar::Size.x,
+                config::Reactor::ScrollBar::Size.y* SizeCoef };
+
+            struct Color
+            {
+                static const inline auto Default = gfx::core::Color( 96 + 32, 96 + 32, 96 + 32 );
+                static const inline auto Hover   = gfx::core::Color( 64 + 32, 64 + 32, 64 + 32 );
+                static const inline auto Pressed = gfx::core::Color( 32 + 32, 32 + 32, 32 + 32 );
+            };
+
+            struct Triangle
+            {
+                struct Color
+                {
+                    static const inline auto Default = gfx::core::Color( 96, 96, 96 );
+                    static const inline auto Hover   = gfx::core::Color( 64, 64, 64 );
+                    static const inline auto Pressed = gfx::core::Color( 32, 32, 32 );
+                };
+
+                struct Up
+                {
+                    static inline const gfx::core::Vector2f Pos = { 0.0f, 0.0f };
+
+                    static inline const gfx::core::Vector2f Triangle[] = {
+                        gfx::core::Vector2f( config::Reactor::ScrollBar::ArrowField::Size.x / 2,
+                                             config::Reactor::ScrollBar::ArrowField::Size.y / 3 ),
+                        gfx::core::Vector2f( config::Reactor::ScrollBar::ArrowField::Size.x / 3,
+                                             2 * config::Reactor::ScrollBar::ArrowField::Size.y /
+                                                 3 ),
+                        gfx::core::Vector2f( 2 * config::Reactor::ScrollBar::ArrowField::Size.x / 3,
+                                             2 * config::Reactor::ScrollBar::ArrowField::Size.y /
+                                                 3 ) };
+                };
+
+                struct Down
+                {
+                    static inline const gfx::core::Vector2f Pos = {
+                        0.0f,
+                        config::Reactor::ScrollBar::Size.y * ( 1 - SizeCoef ) };
+
+                    static inline const gfx::core::Vector2f Triangle[] = {
+                        gfx::core::Vector2f( config::Reactor::ScrollBar::ArrowField::Size.x / 2,
+                                             2 * config::Reactor::ScrollBar::ArrowField::Size.y /
+                                                 3 ),
+                        gfx::core::Vector2f( config::Reactor::ScrollBar::ArrowField::Size.x / 3,
+                                             config::Reactor::ScrollBar::ArrowField::Size.y / 3 ),
+                        gfx::core::Vector2f( 2 * config::Reactor::ScrollBar::ArrowField::Size.x / 3,
+                                             config::Reactor::ScrollBar::ArrowField::Size.y / 3 ) };
+                };
+            };
+        };
+
+        struct Thumb
+        {
+            static constexpr float SizeCoef = 0.1;
+
+            struct Color
+            {
+                static const inline auto Default =
+                    gfx::core::Color( 96 + 32, 96 + 32, 96 + 32, 100 );
+                static const inline auto Hover = gfx::core::Color( 64 + 32, 64 + 32, 64 + 32, 200 );
+                static const inline auto Pressed =
+                    gfx::core::Color( 32 + 32, 32 + 32, 32 + 32, 255 );
+            };
+
+            static inline const gfx::core::Vector2f Size = {
+                config::Reactor::ScrollBar::Size.x,
+                config::Reactor::ScrollBar::Size.y* SizeCoef };
+
+            static inline const gfx::core::Vector2f StartPos = {
+                0.0f,
+                config::Reactor::ScrollBar::ArrowField::Size.y };
         };
     };
 

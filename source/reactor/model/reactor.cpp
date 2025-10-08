@@ -239,10 +239,10 @@ Reactor::collideCircleCircle( Molecule& mol1, Molecule& mol2 )
         return dis( gen );
     };
 
-    double r          = ( mol1.getR() + mol2.getR() ) / 2.0f;
+    double m          = mol1.getM() + mol2.getM();
+    double r          = m;
     double x          = ( mol1.getX() + mol2.getX() ) / 2.0f;
     double y          = ( mol1.getY() + mol2.getY() ) / 2.0f;
-    double m          = mol1.getM() + mol2.getM();
     double energy     = mol1.getFullEnergy() + mol2.getFullEnergy();
     double disp_angle = getRandomAngle();
     double v          = sqrt( 2 * energy / m );
@@ -267,7 +267,7 @@ Reactor::collideSquareCircle( Molecule& mol1, Molecule& mol2 )
 void
 Reactor::collideSquareSquare( Molecule& mol1, Molecule& mol2 )
 {
-    double r             = ( mol1.getR() + mol2.getR() ) / 2.0f;
+    double r             = config::Reactor::Physics::Molecule::Circle::Radius;
     double x             = ( mol1.getX() + mol2.getX() ) / 2.0f;
     double y             = ( mol1.getY() + mol2.getY() ) / 2.0f;
     double total_circles = mol1.getM() + mol2.getM();
@@ -289,7 +289,7 @@ Reactor::collideSquareSquare( Molecule& mol1, Molecule& mol2 )
         double spawn_y = y + disp_distance * sin_disp_angle;
 
         new_molecules_.push_back( { std::make_unique<CircleMolecule>(
-            config::Reactor::Physics::Molecule::Circle::Radius,
+            r,
             spawn_x,
             spawn_y,
             v_circle * cos_disp_angle,
