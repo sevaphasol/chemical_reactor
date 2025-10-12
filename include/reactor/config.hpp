@@ -2,7 +2,6 @@
 
 #include "gfx/core/color.hpp"
 #include "gfx/core/vector2.hpp"
-#include "gfx/core/vertex.hpp"
 #include <sys/types.h>
 
 namespace config {
